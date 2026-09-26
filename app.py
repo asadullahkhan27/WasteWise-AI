@@ -1,7 +1,8 @@
+```python
 # ============================================================
 # WASTEWISE AI
 # AI-Powered Waste Classification & Recycling Assistant
-# Science Exhibition Edition
+# Premium Science Exhibition Edition
 # ============================================================
 
 import json
@@ -10,7 +11,6 @@ from pathlib import Path
 import numpy as np
 import streamlit as st
 import tensorflow as tf
-
 from PIL import Image
 
 
@@ -19,7 +19,7 @@ from PIL import Image
 # ============================================================
 
 st.set_page_config(
-    page_title="WasteWise AI",
+    page_title="WasteWise AI | Smart Waste Classification",
     page_icon="♻️",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -35,13 +35,7 @@ BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "model" / "wastewise_model.keras"
 CLASS_NAMES_PATH = BASE_DIR / "model" / "class_names.json"
 
-
-# ============================================================
-# SETTINGS
-# ============================================================
-
 IMAGE_SIZE = (224, 224)
-
 CONFIDENCE_THRESHOLD = 0.60
 
 
@@ -53,11 +47,13 @@ WASTE_INFO = {
 
     "Hazardous": {
         "icon": "☣️",
+        "color": "#dc2626",
         "short": "Handle Carefully",
         "category": "Special / Hazardous Disposal",
         "description": (
-            "This waste may require special handling and "
-            "should not be mixed with ordinary recycling."
+            "This category may require special handling. "
+            "Keep potentially hazardous materials separate "
+            "from ordinary household recycling."
         ),
         "tips": [
             "Keep hazardous items separated.",
@@ -69,11 +65,12 @@ WASTE_INFO = {
 
     "Non-Recyclable": {
         "icon": "🚫",
-        "short": "Non-Recyclable",
-        "category": "General Waste",
+        "color": "#64748b",
+        "short": "General Waste",
+        "category": "Non-Recyclable / General Waste",
         "description": (
-            "The AI classified this item as non-recyclable. "
-            "Disposal should follow local waste-management rules."
+            "The AI classified this image as non-recyclable. "
+            "Disposal should follow your local waste-management rules."
         ),
         "tips": [
             "Keep it separate from recyclable materials.",
@@ -85,11 +82,12 @@ WASTE_INFO = {
 
     "Organic": {
         "icon": "🌱",
-        "short": "Organic",
-        "category": "Compostable / Organic",
+        "color": "#16a34a",
+        "short": "Organic Material",
+        "category": "Organic / Compostable",
         "description": (
-            "Organic waste can potentially be composted "
-            "when suitable composting facilities are available."
+            "Organic materials may be suitable for composting "
+            "when an appropriate composting system is available."
         ),
         "tips": [
             "Separate organic waste from recyclables.",
@@ -101,11 +99,13 @@ WASTE_INFO = {
 
     "Recyclable": {
         "icon": "♻️",
-        "short": "Recyclable",
+        "color": "#059669",
+        "short": "Recyclable Material",
         "category": "Recyclable Material",
         "description": (
-            "The AI classified this item as recyclable. "
-            "Actual recyclability depends on local recycling rules."
+            "The AI classified this image as recyclable. "
+            "Actual recyclability depends on local recycling facilities "
+            "and material-specific rules."
         ),
         "tips": [
             "Keep recyclable materials clean and dry.",
@@ -118,22 +118,18 @@ WASTE_INFO = {
 
 
 # ============================================================
-# CUSTOM CSS — MODERN EXHIBITION UI
+# PREMIUM CSS
 # ============================================================
 
 st.markdown(
     """
     <style>
 
-    /* -------------------------------------------------------
-       GLOBAL
-    ------------------------------------------------------- */
+    /* =====================================================
+       RESET / GLOBAL
+       ===================================================== */
 
     #MainMenu {
-        visibility: hidden;
-    }
-
-    footer {
         visibility: hidden;
     }
 
@@ -141,344 +137,619 @@ st.markdown(
         visibility: hidden;
     }
 
+    footer {
+        visibility: hidden;
+    }
+
     .stApp {
         background:
             radial-gradient(
-                circle at 10% 10%,
-                rgba(46, 204, 113, 0.10),
-                transparent 30%
+                circle at 5% 5%,
+                rgba(16, 185, 129, 0.14),
+                transparent 25%
             ),
             radial-gradient(
-                circle at 90% 20%,
-                rgba(52, 152, 219, 0.08),
+                circle at 95% 10%,
+                rgba(59, 130, 246, 0.12),
+                transparent 25%
+            ),
+            radial-gradient(
+                circle at 50% 90%,
+                rgba(34, 197, 94, 0.08),
                 transparent 30%
             ),
             linear-gradient(
-                180deg,
-                #f8fffb 0%,
-                #f4f8f7 100%
+                135deg,
+                #f8fffc 0%,
+                #f4f8f7 45%,
+                #f8fbff 100%
             );
     }
 
-
-    /* -------------------------------------------------------
-       MAIN CONTAINER
-    ------------------------------------------------------- */
-
     .block-container {
-        max-width: 1250px;
-        padding-top: 2rem;
-        padding-bottom: 3rem;
+        max-width: 1320px;
+        padding-top: 1.5rem;
+        padding-bottom: 4rem;
     }
 
 
-    /* -------------------------------------------------------
+    /* =====================================================
        HERO
-    ------------------------------------------------------- */
+       ===================================================== */
 
-    .hero {
+    .hero-wrapper {
+        position: relative;
+        overflow: hidden;
+        padding: 70px 30px 55px 30px;
+        margin-bottom: 25px;
+        border-radius: 35px;
+        background:
+            linear-gradient(
+                135deg,
+                rgba(255,255,255,0.95),
+                rgba(240,253,244,0.88)
+            );
+        border: 1px solid rgba(16,185,129,0.15);
+        box-shadow:
+            0 25px 80px rgba(15,23,42,0.08);
         text-align: center;
-        padding: 45px 20px 30px 20px;
+    }
+
+    .hero-wrapper::before {
+        content: "";
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(16,185,129,0.10);
+        top: -170px;
+        left: -100px;
+    }
+
+    .hero-wrapper::after {
+        content: "";
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        background: rgba(59,130,246,0.08);
+        right: -100px;
+        bottom: -140px;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
     }
 
     .hero-badge {
         display: inline-block;
-        padding: 8px 18px;
-        border-radius: 50px;
-        background: rgba(39, 174, 96, 0.12);
-        border: 1px solid rgba(39, 174, 96, 0.25);
-        font-size: 14px;
-        font-weight: 700;
-        margin-bottom: 18px;
+        padding: 9px 18px;
+        border-radius: 999px;
+        background: rgba(16,185,129,0.10);
+        border: 1px solid rgba(16,185,129,0.20);
+        color: #047857;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        margin-bottom: 22px;
     }
 
     .hero-title {
-        font-size: clamp(42px, 7vw, 78px);
-        line-height: 1;
-        font-weight: 900;
-        letter-spacing: -3px;
         margin: 0;
+        font-size: clamp(42px, 7vw, 82px);
+        line-height: 0.98;
+        font-weight: 950;
+        letter-spacing: -4px;
+        color: #0f172a;
     }
 
     .hero-title span {
-        background: linear-gradient(
-            90deg,
-            #159957,
-            #30b56d,
-            #0d8b55
-        );
+        background:
+            linear-gradient(
+                90deg,
+                #047857,
+                #10b981,
+                #059669
+            );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
     .hero-subtitle {
-        max-width: 760px;
-        margin: 20px auto 0 auto;
-        font-size: 20px;
-        line-height: 1.6;
-        opacity: 0.75;
+        max-width: 820px;
+        margin: 25px auto 0 auto;
+        font-size: 18px;
+        line-height: 1.75;
+        color: #475569;
+    }
+
+    .hero-tagline {
+        margin-top: 25px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #64748b;
     }
 
 
-    /* -------------------------------------------------------
-       STATS
-    ------------------------------------------------------- */
+    /* =====================================================
+       STAT CARDS
+       ===================================================== */
 
     .stats-grid {
         display: grid;
-        grid-template-columns:
-            repeat(4, 1fr);
-        gap: 15px;
-        margin: 25px 0 35px 0;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin: 25px 0 45px 0;
     }
 
     .stat-card {
-        padding: 22px 15px;
-        border-radius: 20px;
-        background: rgba(255,255,255,0.82);
-        border: 1px solid rgba(0,0,0,0.07);
-        text-align: center;
+        position: relative;
+        overflow: hidden;
+        padding: 25px 18px;
+        border-radius: 24px;
+        background: rgba(255,255,255,0.80);
+        border: 1px solid rgba(15,23,42,0.07);
         box-shadow:
-            0 8px 30px rgba(0,0,0,0.05);
+            0 12px 35px rgba(15,23,42,0.055);
+        text-align: center;
+        transition: transform 0.2s ease;
     }
 
-    .stat-number {
-        font-size: 30px;
-        font-weight: 900;
+    .stat-card:hover {
+        transform: translateY(-4px);
     }
 
-    .stat-label {
-        font-size: 13px;
-        opacity: 0.65;
-        margin-top: 4px;
-    }
-
-
-    /* -------------------------------------------------------
-       SECTION HEADERS
-    ------------------------------------------------------- */
-
-    .section-heading {
-        font-size: 28px;
-        font-weight: 850;
-        margin-top: 35px;
+    .stat-icon {
+        font-size: 25px;
         margin-bottom: 8px;
     }
 
+    .stat-number {
+        font-size: 29px;
+        font-weight: 950;
+        color: #0f172a;
+    }
+
+    .stat-label {
+        margin-top: 5px;
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+
+
+    /* =====================================================
+       SECTION
+       ===================================================== */
+
+    .section-heading {
+        margin-top: 45px;
+        margin-bottom: 6px;
+        font-size: 30px;
+        font-weight: 900;
+        letter-spacing: -0.8px;
+        color: #0f172a;
+    }
+
     .section-description {
-        opacity: 0.68;
         margin-bottom: 20px;
+        color: #64748b;
+        font-size: 15px;
+        line-height: 1.7;
     }
 
 
-    /* -------------------------------------------------------
-       UPLOAD CARD
-    ------------------------------------------------------- */
+    /* =====================================================
+       UPLOAD AREA
+       ===================================================== */
 
-    .upload-card {
-        padding: 28px;
-        border-radius: 26px;
-        background: rgba(255,255,255,0.88);
-        border: 1px solid rgba(0,0,0,0.07);
+    .upload-container {
+        padding: 8px;
+        border-radius: 30px;
+        background:
+            linear-gradient(
+                135deg,
+                rgba(255,255,255,0.95),
+                rgba(240,253,250,0.88)
+            );
+        border: 1px solid rgba(16,185,129,0.15);
         box-shadow:
-            0 15px 50px rgba(0,0,0,0.07);
+            0 20px 60px rgba(15,23,42,0.07);
+    }
+
+    [data-testid="stFileUploader"] {
+        padding: 12px;
+    }
+
+    [data-testid="stFileUploaderDropzone"] {
+        min-height: 230px !important;
+        border-radius: 25px !important;
+        border: 2px dashed rgba(16,185,129,0.35) !important;
+        background:
+            rgba(240,253,244,0.55) !important;
+        transition: all 0.2s ease;
+    }
+
+    [data-testid="stFileUploaderDropzone"]:hover {
+        border-color: rgba(16,185,129,0.75) !important;
+        background:
+            rgba(236,253,245,0.90) !important;
     }
 
 
-    /* -------------------------------------------------------
-       RESULT CARD
-    ------------------------------------------------------- */
+    /* =====================================================
+       BUTTON
+       ===================================================== */
 
-    .result-card {
+    .stButton > button {
+        width: 100%;
+        min-height: 56px;
+        border-radius: 17px;
+        font-size: 17px;
+        font-weight: 850;
+        border: none;
+        box-shadow:
+            0 10px 25px rgba(16,185,129,0.18);
+    }
+
+
+    /* =====================================================
+       PREVIEW CARD
+       ===================================================== */
+
+    .preview-card {
+        padding: 20px;
+        border-radius: 28px;
+        background: rgba(255,255,255,0.90);
+        border: 1px solid rgba(15,23,42,0.07);
+        box-shadow:
+            0 15px 45px rgba(15,23,42,0.07);
+    }
+
+
+    /* =====================================================
+       READY CARD
+       ===================================================== */
+
+    .ready-card {
         padding: 32px;
         border-radius: 28px;
-        background: rgba(255,255,255,0.92);
-        border: 1px solid rgba(39,174,96,0.18);
+        background:
+            linear-gradient(
+                145deg,
+                rgba(255,255,255,0.95),
+                rgba(240,253,250,0.90)
+            );
+        border: 1px solid rgba(16,185,129,0.14);
         box-shadow:
-            0 18px 55px rgba(0,0,0,0.08);
+            0 15px 45px rgba(15,23,42,0.06);
+    }
+
+    .ready-icon {
+        font-size: 50px;
+        margin-bottom: 10px;
+    }
+
+    .ready-title {
+        font-size: 25px;
+        font-weight: 900;
+        color: #0f172a;
+    }
+
+    .ready-text {
+        margin-top: 10px;
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+
+    /* =====================================================
+       RESULT
+       ===================================================== */
+
+    .result-card {
+        position: relative;
+        overflow: hidden;
+        padding: 45px 25px;
+        margin-top: 20px;
+        border-radius: 32px;
+        background:
+            linear-gradient(
+                145deg,
+                rgba(255,255,255,0.98),
+                rgba(240,253,244,0.92)
+            );
+        border: 1px solid rgba(16,185,129,0.20);
+        box-shadow:
+            0 25px 80px rgba(15,23,42,0.10);
         text-align: center;
-        margin-top: 25px;
+    }
+
+    .result-card::before {
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: rgba(16,185,129,0.09);
+        left: -60px;
+        top: -70px;
     }
 
     .result-icon {
-        font-size: 65px;
-        margin-bottom: 5px;
+        position: relative;
+        font-size: 72px;
     }
 
     .result-label {
-        font-size: 14px;
-        font-weight: 700;
-        opacity: 0.55;
-        text-transform: uppercase;
+        margin-top: 10px;
+        font-size: 12px;
+        font-weight: 900;
         letter-spacing: 2px;
+        color: #64748b;
+        text-transform: uppercase;
     }
 
     .result-name {
-        font-size: clamp(30px, 5vw, 48px);
-        font-weight: 900;
-        margin: 8px 0;
+        margin-top: 8px;
+        font-size: clamp(32px, 5vw, 55px);
+        font-weight: 950;
+        letter-spacing: -2px;
+        color: #0f172a;
     }
 
     .result-category {
+        margin-top: 5px;
         font-size: 17px;
-        opacity: 0.7;
+        color: #64748b;
     }
 
 
-    /* -------------------------------------------------------
+    /* =====================================================
        CONFIDENCE
-    ------------------------------------------------------- */
+       ===================================================== */
 
     .confidence-card {
-        padding: 24px;
-        border-radius: 22px;
-        background: rgba(255,255,255,0.85);
-        border: 1px solid rgba(0,0,0,0.07);
-        margin-top: 18px;
+        padding: 28px;
+        border-radius: 25px;
+        background: rgba(255,255,255,0.90);
+        border: 1px solid rgba(15,23,42,0.07);
+        box-shadow:
+            0 12px 40px rgba(15,23,42,0.06);
     }
 
     .confidence-number {
-        font-size: 38px;
-        font-weight: 900;
+        font-size: 44px;
+        font-weight: 950;
         text-align: center;
+        color: #047857;
     }
 
     .confidence-label {
         text-align: center;
-        font-size: 13px;
-        opacity: 0.6;
+        margin-top: 3px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #64748b;
     }
 
 
-    /* -------------------------------------------------------
-       INFO CARDS
-    ------------------------------------------------------- */
+    /* =====================================================
+       INFORMATION CARDS
+       ===================================================== */
 
     .info-card {
-        padding: 24px;
-        border-radius: 22px;
-        background: rgba(255,255,255,0.86);
-        border: 1px solid rgba(0,0,0,0.06);
-        height: 100%;
+        min-height: 210px;
+        padding: 28px;
+        border-radius: 26px;
+        background: rgba(255,255,255,0.88);
+        border: 1px solid rgba(15,23,42,0.07);
         box-shadow:
-            0 8px 30px rgba(0,0,0,0.04);
+            0 12px 40px rgba(15,23,42,0.055);
     }
 
     .info-icon {
-        font-size: 38px;
+        font-size: 40px;
     }
 
     .info-title {
-        font-size: 20px;
-        font-weight: 800;
-        margin-top: 10px;
+        margin-top: 12px;
+        font-size: 21px;
+        font-weight: 900;
+        color: #0f172a;
     }
 
     .info-text {
-        opacity: 0.68;
-        line-height: 1.6;
-        margin-top: 8px;
+        margin-top: 10px;
+        color: #64748b;
+        line-height: 1.75;
     }
 
 
-    /* -------------------------------------------------------
-       CLASS CHIPS
-    ------------------------------------------------------- */
+    /* =====================================================
+       PREDICTION BAR AREA
+       ===================================================== */
+
+    .prediction-card {
+        padding: 25px;
+        border-radius: 25px;
+        background: rgba(255,255,255,0.88);
+        border: 1px solid rgba(15,23,42,0.07);
+        box-shadow:
+            0 12px 40px rgba(15,23,42,0.05);
+    }
+
+    .prediction-title {
+        font-size: 18px;
+        font-weight: 850;
+        color: #0f172a;
+    }
+
+
+    /* =====================================================
+       CATEGORY CHIPS
+       ===================================================== */
 
     .chips {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 12px;
         margin-top: 15px;
     }
 
     .chip {
-        padding: 9px 15px;
-        border-radius: 50px;
-        background: rgba(39,174,96,0.09);
-        border: 1px solid rgba(39,174,96,0.18);
+        padding: 11px 17px;
+        border-radius: 999px;
+        background: rgba(16,185,129,0.08);
+        border: 1px solid rgba(16,185,129,0.17);
+        color: #047857;
         font-size: 13px;
-        font-weight: 700;
-    }
-
-
-    /* -------------------------------------------------------
-       FOOTER
-    ------------------------------------------------------- */
-
-    .footer-box {
-        text-align: center;
-        padding: 35px 20px 10px 20px;
-        margin-top: 45px;
-        border-top: 1px solid rgba(0,0,0,0.08);
-        opacity: 0.7;
-    }
-
-
-    /* -------------------------------------------------------
-       STREAMLIT INPUTS
-    ------------------------------------------------------- */
-
-    [data-testid="stFileUploader"] {
-        padding: 10px;
-    }
-
-    [data-testid="stFileUploaderDropzone"] {
-        border-radius: 20px !important;
-        border: 2px dashed rgba(39,174,96,0.35) !important;
-        padding: 28px !important;
-    }
-
-    .stButton > button {
-        width: 100%;
-        border-radius: 15px;
-        min-height: 52px;
-        font-size: 17px;
         font-weight: 800;
     }
 
 
-    /* -------------------------------------------------------
-       MOBILE RESPONSIVE
-    ------------------------------------------------------- */
+    /* =====================================================
+       HOW IT WORKS
+       ===================================================== */
+
+    .step-card {
+        min-height: 250px;
+        padding: 27px;
+        border-radius: 26px;
+        background: rgba(255,255,255,0.88);
+        border: 1px solid rgba(15,23,42,0.07);
+        box-shadow:
+            0 12px 40px rgba(15,23,42,0.05);
+    }
+
+    .step-number {
+        font-size: 12px;
+        font-weight: 900;
+        color: #10b981;
+        letter-spacing: 1px;
+    }
+
+    .step-icon {
+        font-size: 42px;
+        margin-top: 18px;
+    }
+
+    .step-title {
+        margin-top: 12px;
+        font-size: 20px;
+        font-weight: 900;
+        color: #0f172a;
+    }
+
+    .step-text {
+        margin-top: 8px;
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+
+    /* =====================================================
+       FOOTER
+       ===================================================== */
+
+    .footer-box {
+        margin-top: 60px;
+        padding: 38px 20px 15px 20px;
+        border-top: 1px solid rgba(15,23,42,0.08);
+        text-align: center;
+        color: #64748b;
+    }
+
+    .footer-logo {
+        font-size: 38px;
+    }
+
+    .footer-title {
+        margin-top: 8px;
+        font-size: 20px;
+        font-weight: 900;
+        color: #0f172a;
+    }
+
+    .footer-subtitle {
+        margin-top: 5px;
+        font-size: 13px;
+    }
+
+    .footer-note {
+        margin-top: 15px;
+        font-size: 11px;
+    }
+
+
+    /* =====================================================
+       MOBILE
+       ===================================================== */
 
     @media (max-width: 768px) {
 
         .block-container {
-            padding-left: 1rem;
-            padding-right: 1rem;
-            padding-top: 1rem;
+            padding-left: 0.8rem;
+            padding-right: 0.8rem;
+            padding-top: 0.8rem;
         }
 
-        .hero {
-            padding-top: 25px;
+        .hero-wrapper {
+            padding: 45px 18px 40px 18px;
+            border-radius: 26px;
         }
 
         .hero-title {
-            letter-spacing: -1.5px;
+            font-size: 47px;
+            letter-spacing: -2px;
         }
 
         .hero-subtitle {
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .stats-grid {
-            grid-template-columns:
-                repeat(2, 1fr);
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .stat-card {
+            padding: 20px 10px;
         }
 
         .stat-number {
-            font-size: 24px;
+            font-size: 23px;
         }
 
-        .upload-card {
-            padding: 18px;
+        .section-heading {
+            font-size: 25px;
+        }
+
+        .upload-container {
+            border-radius: 22px;
         }
 
         .result-card {
-            padding: 24px 15px;
+            padding: 35px 15px;
+            border-radius: 25px;
         }
 
+        .result-icon {
+            font-size: 60px;
+        }
+
+        .confidence-number {
+            font-size: 38px;
+        }
+
+        .info-card,
+        .step-card {
+            min-height: auto;
+        }
     }
 
     </style>
@@ -494,32 +765,27 @@ st.markdown(
 @st.cache_data
 def load_class_names():
 
-    if not CLASS_NAMES_PATH.exists():
+    default_classes = [
+        "Hazardous",
+        "Non-Recyclable",
+        "Organic",
+        "Recyclable"
+    ]
 
-        return [
-            "Hazardous",
-            "Non-Recyclable",
-            "Organic",
-            "Recyclable"
-        ]
+    if not CLASS_NAMES_PATH.exists():
+        return default_classes
 
     try:
+        with open(CLASS_NAMES_PATH, "r") as file:
+            classes = json.load(file)
 
-        with open(
-            CLASS_NAMES_PATH,
-            "r"
-        ) as file:
+        if isinstance(classes, list) and len(classes) > 0:
+            return classes
 
-            return json.load(file)
+        return default_classes
 
     except Exception:
-
-        return [
-            "Hazardous",
-            "Non-Recyclable",
-            "Organic",
-            "Recyclable"
-        ]
+        return default_classes
 
 
 CLASS_NAMES = load_class_names()
@@ -536,17 +802,10 @@ def load_model():
         return None
 
     try:
-
-        return tf.keras.models.load_model(
-            MODEL_PATH
-        )
+        return tf.keras.models.load_model(MODEL_PATH)
 
     except Exception as error:
-
-        st.error(
-            f"Model loading error: {error}"
-        )
-
+        st.error(f"Model loading error: {error}")
         return None
 
 
@@ -559,20 +818,28 @@ model = load_model()
 
 st.markdown(
     """
-    <div class="hero">
+    <div class="hero-wrapper">
 
-        <div class="hero-badge">
-            🌍 SCIENCE EXHIBITION • AI PROJECT
-        </div>
+        <div class="hero-content">
 
-        <h1 class="hero-title">
-            ♻️ <span>WasteWise AI</span>
-        </h1>
+            <div class="hero-badge">
+                🌍 SCIENCE EXHIBITION • ARTIFICIAL INTELLIGENCE
+            </div>
 
-        <div class="hero-subtitle">
-            An AI-powered waste classification assistant
-            designed to promote smarter waste awareness,
-            responsible disposal, and recycling.
+            <h1 class="hero-title">
+                ♻️ <span>WasteWise AI</span>
+            </h1>
+
+            <div class="hero-subtitle">
+                An intelligent computer-vision assistant that analyzes
+                waste images and predicts their category using a trained
+                deep-learning model.
+            </div>
+
+            <div class="hero-tagline">
+                🌱 Learn • Classify • Dispose Responsibly
+            </div>
+
         </div>
 
     </div>
@@ -590,13 +857,15 @@ st.markdown(
     <div class="stats-grid">
 
         <div class="stat-card">
-            <div class="stat-number">🤖 AI</div>
+            <div class="stat-icon">🧠</div>
+            <div class="stat-number">AI</div>
             <div class="stat-label">
-                Image Classification
+                Computer Vision
             </div>
         </div>
 
         <div class="stat-card">
+            <div class="stat-icon">♻️</div>
             <div class="stat-number">4</div>
             <div class="stat-label">
                 Waste Categories
@@ -604,6 +873,7 @@ st.markdown(
         </div>
 
         <div class="stat-card">
+            <div class="stat-icon">📐</div>
             <div class="stat-number">224²</div>
             <div class="stat-label">
                 Image Input
@@ -611,9 +881,10 @@ st.markdown(
         </div>
 
         <div class="stat-card">
-            <div class="stat-number">♻️</div>
+            <div class="stat-icon">🌱</div>
+            <div class="stat-number">AI +</div>
             <div class="stat-label">
-                Sustainability Focus
+                Sustainability
             </div>
         </div>
 
@@ -624,7 +895,7 @@ st.markdown(
 
 
 # ============================================================
-# MODEL ERROR CHECK
+# MODEL STATUS
 # ============================================================
 
 if model is None:
@@ -633,15 +904,15 @@ if model is None:
         "⚠️ WasteWise AI model is not available."
     )
 
-    st.markdown(
+    st.info(
+        "Make sure these files exist inside your project:"
+    )
+
+    st.code(
         """
-        Please check that your project contains:
-
-        `model/wastewise_model.keras`
-
-        and
-
-        `model/class_names.json`
+model/
+├── wastewise_model.keras
+└── class_names.json
         """
     )
 
@@ -660,8 +931,9 @@ st.markdown(
 st.markdown(
     """
     <div class="section-description">
-        Upload a clear image of a waste item and let
-        WasteWise AI analyze it.
+        Upload a clear photo of a waste item. WasteWise AI will
+        process the image and generate a predicted waste category
+        with confidence information.
     </div>
     """,
     unsafe_allow_html=True
@@ -669,10 +941,9 @@ st.markdown(
 
 
 st.markdown(
-    '<div class="upload-card">',
+    '<div class="upload-container">',
     unsafe_allow_html=True
 )
-
 
 uploaded_file = st.file_uploader(
     "Drag & drop your waste image here",
@@ -682,9 +953,8 @@ uploaded_file = st.file_uploader(
         "png",
         "webp"
     ],
-    help="For better results, use a clear image with the waste item visible."
+    help="Use a clear, well-lit image where the waste item is easy to see."
 )
-
 
 st.markdown(
     '</div>',
@@ -693,7 +963,7 @@ st.markdown(
 
 
 # ============================================================
-# IMAGE + PREDICTION
+# IMAGE ANALYSIS
 # ============================================================
 
 if uploaded_file is not None:
@@ -714,43 +984,60 @@ if uploaded_file is not None:
 
 
     st.markdown(
-        '<div class="section-heading">🖼️ Image Preview</div>',
+        '<div class="section-heading">🖼️ Image Analysis</div>',
         unsafe_allow_html=True
     )
 
-
-    preview_col, details_col = st.columns(
-        [1.2, 1],
+    preview_col, action_col = st.columns(
+        [1.15, 1],
         gap="large"
     )
 
 
+    # --------------------------------------------------------
+    # PREVIEW
+    # --------------------------------------------------------
+
     with preview_col:
+
+        st.markdown(
+            '<div class="preview-card">',
+            unsafe_allow_html=True
+        )
 
         st.image(
             image,
             caption="Uploaded Waste Image",
-            width="stretch"
+            use_container_width=True
+        )
+
+        st.markdown(
+            '</div>',
+            unsafe_allow_html=True
         )
 
 
-    with details_col:
+    # --------------------------------------------------------
+    # ACTION
+    # --------------------------------------------------------
+
+    with action_col:
 
         st.markdown(
             """
-            <div class="info-card">
+            <div class="ready-card">
 
-                <div class="info-icon">
-                    📷
+                <div class="ready-icon">
+                    🤖
                 </div>
 
-                <div class="info-title">
-                    Ready for Analysis
+                <div class="ready-title">
+                    Image Ready
                 </div>
 
-                <div class="info-text">
-                    Your image has been loaded successfully.
-                    Click the button below to send it to the
+                <div class="ready-text">
+                    Your image has been successfully loaded.
+                    Click the button below to run the trained
                     WasteWise AI classification model.
                 </div>
 
@@ -762,8 +1049,9 @@ if uploaded_file is not None:
         st.write("")
 
         analyze_button = st.button(
-            "🔍 Analyze Waste",
-            type="primary"
+            "🔍  ANALYZE WASTE",
+            type="primary",
+            use_container_width=True
         )
 
 
@@ -774,7 +1062,7 @@ if uploaded_file is not None:
     if analyze_button:
 
         with st.spinner(
-            "🤖 WasteWise AI is analyzing your image..."
+            "🤖 WasteWise AI is analyzing the image..."
         ):
 
             processed_image = image.resize(
@@ -814,22 +1102,23 @@ if uploaded_file is not None:
                 "icon": "♻️",
                 "short": predicted_class,
                 "category": predicted_class,
-                "description":
-                    "No additional information available.",
+                "description": (
+                    "No additional information is available "
+                    "for this category."
+                ),
                 "tips": []
             }
         )
 
 
         # ====================================================
-        # RESULT
+        # AI RESULT
         # ====================================================
 
         st.markdown(
-            '<div class="section-heading">🤖 AI Result</div>',
+            '<div class="section-heading">🤖 AI Classification Result</div>',
             unsafe_allow_html=True
         )
-
 
         st.markdown(
             f"""
@@ -861,6 +1150,11 @@ if uploaded_file is not None:
         # CONFIDENCE
         # ====================================================
 
+        st.markdown(
+            '<div class="section-heading">📊 Prediction Confidence</div>',
+            unsafe_allow_html=True
+        )
+
         confidence_col1, confidence_col2 = st.columns(
             [1, 2],
             gap="large"
@@ -890,13 +1184,20 @@ if uploaded_file is not None:
         with confidence_col2:
 
             st.markdown(
-                "### Confidence Level"
+                '<div class="prediction-card">',
+                unsafe_allow_html=True
             )
+
+            st.markdown(
+                '<div class="prediction-title">Confidence Level</div>',
+                unsafe_allow_html=True
+            )
+
+            st.write("")
 
             st.progress(
                 min(confidence, 1.0)
             )
-
 
             if confidence >= 0.80:
 
@@ -918,19 +1219,23 @@ if uploaded_file is not None:
 
                 st.caption(
                     "Try a clearer image with the waste item "
-                    "centered and well illuminated."
+                    "centered, visible, and well illuminated."
                 )
+
+            st.markdown(
+                '</div>',
+                unsafe_allow_html=True
+            )
 
 
         # ====================================================
-        # GUIDANCE
+        # SMART GUIDANCE
         # ====================================================
 
         st.markdown(
             '<div class="section-heading">💡 Smart Waste Guidance</div>',
             unsafe_allow_html=True
         )
-
 
         guidance_col1, guidance_col2 = st.columns(
             2,
@@ -949,7 +1254,7 @@ if uploaded_file is not None:
                     </div>
 
                     <div class="info-title">
-                        What does this mean?
+                        What Does This Mean?
                     </div>
 
                     <div class="info-text">
@@ -969,11 +1274,10 @@ if uploaded_file is not None:
             for tip in info["tips"]:
 
                 tips_html += (
-                    f"<div style='margin:8px 0;'>"
+                    f"<div style='margin:10px 0;'>"
                     f"✅ {tip}"
                     f"</div>"
                 )
-
 
             st.markdown(
                 f"""
@@ -998,18 +1302,19 @@ if uploaded_file is not None:
 
 
         # ====================================================
-        # TOP PREDICTIONS
+        # CONFIDENCE BREAKDOWN
         # ====================================================
 
         st.markdown(
-            '<div class="section-heading">📊 AI Confidence Breakdown</div>',
+            '<div class="section-heading">📈 AI Confidence Breakdown</div>',
             unsafe_allow_html=True
         )
 
         st.markdown(
             """
             <div class="section-description">
-                See how the model scored each supported waste category.
+                These values show how strongly the model scored
+                each supported waste category.
             </div>
             """,
             unsafe_allow_html=True
@@ -1026,9 +1331,10 @@ if uploaded_file is not None:
             start=1
         ):
 
-            class_name = CLASS_NAMES[
-                index
-            ]
+            if index >= len(CLASS_NAMES):
+                continue
+
+            class_name = CLASS_NAMES[index]
 
             probability = float(
                 predictions[index]
@@ -1044,9 +1350,18 @@ if uploaded_file is not None:
                 "♻️"
             )
 
-
-            st.write(
-                f"**{rank}. {icon} {class_name}**"
+            st.markdown(
+                f"""
+                <div style="
+                    margin-top:18px;
+                    margin-bottom:5px;
+                    font-weight:850;
+                    color:#0f172a;
+                ">
+                    {rank}. {icon} {class_name}
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
             st.progress(
@@ -1059,31 +1374,32 @@ if uploaded_file is not None:
 
 
         # ====================================================
-        # EDUCATIONAL NOTE
+        # EDUCATIONAL NOTICE
         # ====================================================
 
-        st.markdown(
-            "---"
-        )
+        st.markdown("---")
 
         st.warning(
             """
             ⚠️ **Educational AI Notice**
 
             WasteWise AI is a science-exhibition machine-learning
-            project. Predictions are based on the visual patterns
-            learned from its training dataset and should not be
-            treated as a definitive determination of material
-            composition, recyclability, hazardousness, or safety.
+            project. Its prediction is based on visual patterns
+            learned from the training dataset.
+
+            The prediction should not be treated as a definitive
+            determination of material composition, recyclability,
+            hazardousness, or safety.
 
             Always follow local waste-management rules and seek
-            appropriate professional guidance for hazardous materials.
+            appropriate professional guidance when dealing with
+            potentially hazardous materials.
             """
         )
 
 
 # ============================================================
-# HOW IT WORKS
+# HOW WASTEWISE AI WORKS
 # ============================================================
 
 st.markdown(
@@ -1094,7 +1410,8 @@ st.markdown(
 st.markdown(
     """
     <div class="section-description">
-        From image to intelligent waste classification.
+        Four simple steps transform a waste image into an
+        AI-powered classification.
     </div>
     """,
     unsafe_allow_html=True
@@ -1110,31 +1427,31 @@ how_col1, how_col2, how_col3, how_col4 = st.columns(
 steps = [
 
     (
-        "01",
+        "STEP 01",
         "📸",
         "Capture",
         "Upload a clear image of the waste item."
     ),
 
     (
-        "02",
+        "STEP 02",
         "🧠",
         "Analyze",
-        "EfficientNetB0 extracts visual features."
+        "EfficientNetB0 extracts important visual features."
     ),
 
     (
-        "03",
+        "STEP 03",
         "🤖",
         "Classify",
-        "The trained AI predicts the waste category."
+        "The trained neural network predicts the waste category."
     ),
 
     (
-        "04",
+        "STEP 04",
         "🌱",
         "Act",
-        "Get awareness and waste-management guidance."
+        "Use the result to learn about responsible waste handling."
     )
 
 ]
@@ -1156,25 +1473,21 @@ for column, step in zip(
 
         st.markdown(
             f"""
-            <div class="info-card">
+            <div class="step-card">
 
-                <div style="
-                    font-size:13px;
-                    font-weight:800;
-                    opacity:0.45;
-                ">
-                    STEP {number}
+                <div class="step-number">
+                    {number}
                 </div>
 
-                <div class="info-icon">
+                <div class="step-icon">
                     {icon}
                 </div>
 
-                <div class="info-title">
+                <div class="step-title">
                     {title}
                 </div>
 
-                <div class="info-text">
+                <div class="step-text">
                     {description}
                 </div>
 
@@ -1193,9 +1506,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-
 chips_html = '<div class="chips">'
-
 
 for class_name in CLASS_NAMES:
 
@@ -1211,9 +1522,7 @@ for class_name in CLASS_NAMES:
         f'</div>'
     )
 
-
 chips_html += "</div>"
-
 
 st.markdown(
     chips_html,
@@ -1225,12 +1534,18 @@ st.markdown(
 # MODEL INFORMATION
 # ============================================================
 
+st.markdown(
+    '<div class="section-heading">🔬 AI Model Information</div>',
+    unsafe_allow_html=True
+)
+
 with st.expander(
-    "🔬 View AI Model Information"
+    "Open technical details"
 ):
 
     model_col1, model_col2 = st.columns(
-        2
+        2,
+        gap="large"
     )
 
     with model_col1:
@@ -1240,26 +1555,34 @@ with st.expander(
         )
 
         st.write(
-            "**Input Size:** 224 × 224 × 3"
+            "**Input:** 224 × 224 × 3"
         )
 
         st.write(
-            "**Output Classes:** 4"
+            "**Learning Method:** Transfer Learning"
+        )
+
+        st.write(
+            "**Task:** Image Classification"
         )
 
 
     with model_col2:
 
         st.write(
-            "**Training:** Transfer Learning"
+            "**Output Classes:** 4"
         )
 
         st.write(
-            "**Classification:** Image Classification"
+            "**Model Format:** Keras `.keras`"
         )
 
         st.write(
-            "**Model File:** wastewise_model.keras"
+            "**Model File:** `wastewise_model.keras`"
+        )
+
+        st.write(
+            "**Class File:** `class_names.json`"
         )
 
 
@@ -1271,34 +1594,25 @@ st.markdown(
     """
     <div class="footer-box">
 
-        <div style="font-size:28px;">
+        <div class="footer-logo">
             ♻️
         </div>
 
-        <div style="
-            font-size:18px;
-            font-weight:800;
-            margin-top:8px;
-        ">
+        <div class="footer-title">
             WasteWise AI
         </div>
 
-        <div style="
-            margin-top:5px;
-            font-size:13px;
-        ">
+        <div class="footer-subtitle">
             AI for Smarter Waste Classification & Awareness
         </div>
 
-        <div style="
-            margin-top:12px;
-            font-size:12px;
-        ">
-            Built for Science Exhibition • Machine Learning • Sustainability
+        <div class="footer-note">
+            Built for Science Exhibition • Deep Learning •
+            Computer Vision • Sustainability
         </div>
 
     </div>
     """,
     unsafe_allow_html=True
 )
-
+```
