@@ -1301,52 +1301,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-```
-
-### `requirements.txt`
-
-Is UI ke liye yeh rakho:
-
-```txt
-streamlit
-tensorflow
-numpy
-pillow
-```
-
-### 📁 Final folder
-
-```text
-WasteWise-AI/
-│
-├── app.py
-├── requirements.txt
-│
-└── model/
-    ├── wastewise_model.keras
-    └── class_names.json
-```
-
-### 🔥 UI mein ab kya hai?
-
-* **Exhibition-style Hero Section**
-* **Responsive desktop + mobile layout**
-* **Modern upload/drop-zone**
-* **Large AI prediction card**
-* **Confidence percentage + progress bar**
-* **Top 3/4 prediction breakdown**
-* **Waste-management guidance**
-* **Recommended practices**
-* **4 supported-category chips**
-* **“How WasteWise AI Works” 4-step section**
-* **AI model information**
-* **Educational safety notice**
-* **Responsive cards and typography**
-* **Clean sustainability-focused visual design**
-
-Run karne ke liye:
-
-```bash
 streamlit run app.py
 ```
 
