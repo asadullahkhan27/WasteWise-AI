@@ -1098,8 +1098,7 @@ with logo_col2:
 
         st.image(
             str(ICODEGURU_LOGO),
-            width=65,
-            height=100
+            width=65
         )
 
     else:
@@ -1115,8 +1114,7 @@ with logo_col3:
 
         st.image(
             str(SCHOOL_LOGO),
-            width=65,
-            height=100
+            width=65
         )
 
     else:
