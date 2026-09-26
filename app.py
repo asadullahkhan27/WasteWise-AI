@@ -160,26 +160,7 @@ st.markdown(
     """
     <style>
 
-    /* Top-right logos */
-
-    .logo-container {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 5px;
-    }
-
-    .logo-circle {
-        width: 65px;
-        height: 65px;
-        border-radius: 100%;
-        object-fit: cover;
-        border: 2px solid rgba(128, 128, 128, 0.25);
-    }
-
-
-    /* Main title */
+    /* Main Title */
 
     .main-title {
         text-align: center;
@@ -199,7 +180,7 @@ st.markdown(
     }
 
 
-    /* Prediction result */
+    /* Prediction Result */
 
     .result-box {
         padding: 25px;
@@ -223,7 +204,7 @@ st.markdown(
     }
 
 
-    /* Section title */
+    /* Section Title */
 
     .section-title {
         font-size: 22px;
@@ -245,136 +226,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-
-# ============================================================
-# LOGO DISPLAY
-# ============================================================
-#
-# NOTE:
-# Streamlit's st.image() is used instead of Base64 HTML.
-# Therefore <img src="data:image/png;base64,..."> will
-# NOT appear as text in the application.
-#
-# ============================================================
-
-logo_col1, logo_col2, logo_col3 = st.columns(
-    [7, 1, 1]
-)
-
-
-with logo_col2:
-
-    if ICODEGURU_LOGO.exists():
-
-        st.image(
-            str(ICODEGURU_LOGO),
-            width=300
-        )
-
-    else:
-
-        st.caption(
-            "iCodeGuru logo missing"
-        )
-
-
-with logo_col3:
-
-    if SCHOOL_LOGO.exists():
-
-        st.image(
-            str(SCHOOL_LOGO),
-            width=300
-        )
-
-    else:
-
-        st.caption(
-            "School logo missing"
-        )
-
-
-# ============================================================
-# MAIN HEADER
-# ============================================================
-
-st.markdown(
-    '<div class="main-title">♻️ WasteWise AI</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    """
-    <div class="subtitle">
-        AI-Powered Waste Classification & Recycling Assistant
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-st.info(
-    "Upload a waste image or use your camera. "
-    "WasteWise AI will classify it into one of four "
-    "trained waste categories."
-)
-
-
-# ============================================================
-# SIDEBAR
-# ============================================================
-
-with st.sidebar:
-
-    st.header("♻️ WasteWise AI")
-
-    st.markdown("### About the Project")
-
-    st.write(
-        """
-        WasteWise AI uses a trained EfficientNetB0
-        image-classification model to identify waste
-        categories from images.
-        """
-    )
-
-    st.markdown("### Supported Classes")
-
-    for class_name in CLASS_NAMES if 'CLASS_NAMES' in locals() else [
-        "Hazardous",
-        "Non-Recyclable",
-        "Organic",
-        "Recyclable"
-    ]:
-
-        info = WASTE_INFO.get(
-            class_name,
-            {}
-        )
-
-        icon = info.get(
-            "icon",
-            "♻️"
-        )
-
-        st.write(
-            f"{icon} {class_name}"
-        )
-
-    st.markdown("---")
-
-    st.caption(
-        "Model: EfficientNetB0"
-    )
-
-    st.caption(
-        "Image Size: 224 × 224"
-    )
-
-    st.caption(
-        "Classes: 4"
-    )
 
 
 # ============================================================
@@ -442,6 +293,124 @@ def load_model():
 
 
 model = load_model()
+
+
+# ============================================================
+# LOGO DISPLAY
+# ============================================================
+
+logo_col1, logo_col2, logo_col3 = st.columns(
+    [6, 1.4, 1.4]
+)
+
+
+with logo_col2:
+
+    if ICODEGURU_LOGO.exists():
+
+        st.image(
+            str(ICODEGURU_LOGO),
+            width=110
+        )
+
+    else:
+
+        st.caption(
+            "iCodeGuru logo missing"
+        )
+
+
+with logo_col3:
+
+    if SCHOOL_LOGO.exists():
+
+        st.image(
+            str(SCHOOL_LOGO),
+            width=110
+        )
+
+    else:
+
+        st.caption(
+            "School logo missing"
+        )
+
+
+# ============================================================
+# MAIN HEADER
+# ============================================================
+
+st.markdown(
+    '<div class="main-title">♻️ WasteWise AI</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    <div class="subtitle">
+        AI-Powered Waste Classification & Recycling Assistant
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+st.info(
+    "Upload a waste image or use your camera. "
+    "WasteWise AI will classify it into one of four "
+    "trained waste categories."
+)
+
+
+# ============================================================
+# SIDEBAR
+# ============================================================
+
+with st.sidebar:
+
+    st.header("♻️ WasteWise AI")
+
+    st.markdown("### About the Project")
+
+    st.write(
+        """
+        WasteWise AI uses a trained EfficientNetB0
+        image-classification model to identify waste
+        categories from images.
+        """
+    )
+
+    st.markdown("### Supported Classes")
+
+    for class_name in CLASS_NAMES:
+
+        info = WASTE_INFO.get(
+            class_name,
+            {}
+        )
+
+        icon = info.get(
+            "icon",
+            "♻️"
+        )
+
+        st.write(
+            f"{icon} {class_name}"
+        )
+
+    st.markdown("---")
+
+    st.caption(
+        "Model: EfficientNetB0"
+    )
+
+    st.caption(
+        "Image Size: 224 × 224"
+    )
+
+    st.caption(
+        "Classes: 4"
+    )
 
 
 # ============================================================
@@ -790,11 +759,9 @@ if selected_file is not None:
                 predictions[index]
             )
 
-
             st.write(
                 f"**{rank}. {class_name}**"
             )
-
 
             st.progress(
                 min(
@@ -802,7 +769,6 @@ if selected_file is not None:
                     1.0
                 )
             )
-
 
             st.caption(
                 f"{probability * 100:.2f}%"
