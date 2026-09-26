@@ -1,6 +1,6 @@
 /* =========================================================
-   WASTEWISE AI
-   PREMIUM EXHIBITION UI
+   WASTEWISE AI - PREMIUM UI
+   ALL DESIGN/CSS IS HERE
    ========================================================= */
 
 html,
@@ -8,53 +8,46 @@ body,
 [data-testid="stAppViewContainer"] {
     background:
         radial-gradient(
-            circle at top left,
-            rgba(34, 197, 94, 0.15),
-            transparent 35%
+            circle at 10% 0%,
+            rgba(34, 197, 94, 0.16),
+            transparent 32%
         ),
         radial-gradient(
-            circle at top right,
+            circle at 90% 10%,
             rgba(16, 185, 129, 0.12),
             transparent 30%
         ),
         #06130d;
 }
 
-
-/* =========================================================
-   MAIN CONTENT
-   ========================================================= */
-
+/* Main container */
 .block-container {
     max-width: 1250px;
-    padding-top: 2rem;
+    padding-top: 1.5rem;
     padding-bottom: 3rem;
 }
 
-
-/* =========================================================
-   TEXT
-   ========================================================= */
-
+/* General text */
 h1,
 h2,
 h3,
 h4,
+h5,
+h6,
 p,
 label {
     color: #ecfdf5 !important;
 }
 
-
 /* =========================================================
-   BRAND
+   BRAND HEADER
    ========================================================= */
 
 .brand-left {
     display: flex;
     align-items: center;
-    gap: 18px;
-    padding: 12px 0;
+    gap: 16px;
+    padding: 8px 0;
 }
 
 .brand-icon {
@@ -67,9 +60,9 @@ label {
 
     border-radius: 18px;
 
-    background: rgba(34, 197, 94, 0.15);
+    background: rgba(34, 197, 94, 0.14);
 
-    border: 1px solid rgba(74, 222, 128, 0.3);
+    border: 1px solid rgba(74, 222, 128, 0.28);
 
     font-size: 30px;
 
@@ -78,8 +71,8 @@ label {
 }
 
 .brand-name {
-    font-size: 24px;
-    font-weight: 800;
+    font-size: 25px;
+    font-weight: 900;
 
     color: #f0fdf4;
 
@@ -93,25 +86,27 @@ label {
 
     font-size: 13px;
 
-    font-weight: 500;
+    font-weight: 600;
 }
 
-.fallback-logo {
-    padding: 12px;
+.logo-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+}
 
-    border-radius: 12px;
+.logo-box {
+    padding: 8px 12px;
+
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.04);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
 
     text-align: center;
-
-    background: rgba(255, 255, 255, 0.05);
-
-    border: 1px solid rgba(255, 255, 255, 0.1);
-
-    color: #bbf7d0;
-
-    font-weight: 700;
 }
-
 
 /* =========================================================
    HERO
@@ -127,8 +122,8 @@ label {
     background:
         linear-gradient(
             135deg,
-            rgba(20, 83, 45, 0.75),
-            rgba(6, 78, 59, 0.55)
+            rgba(20, 83, 45, 0.78),
+            rgba(6, 78, 59, 0.58)
         );
 
     border: 1px solid rgba(74, 222, 128, 0.18);
@@ -139,14 +134,19 @@ label {
     text-align: center;
 }
 
+.hero-content {
+    max-width: 900px;
+    margin: auto;
+}
+
 .hero-badge {
     display: inline-block;
 
-    padding: 8px 16px;
+    padding: 9px 17px;
 
     border-radius: 999px;
 
-    background: rgba(74, 222, 128, 0.12);
+    background: rgba(74, 222, 128, 0.11);
 
     border: 1px solid rgba(74, 222, 128, 0.25);
 
@@ -154,15 +154,17 @@ label {
 
     font-size: 13px;
 
-    font-weight: 700;
+    font-weight: 800;
 }
 
 .hero-title {
-    margin-top: 22px;
+    margin-top: 20px;
+
+    margin-bottom: 12px;
 
     font-size: clamp(48px, 7vw, 82px);
 
-    font-weight: 900;
+    font-weight: 950;
 
     letter-spacing: -4px;
 
@@ -176,7 +178,7 @@ label {
 .hero-subtitle {
     max-width: 850px;
 
-    margin: 0 auto;
+    margin: auto;
 
     line-height: 1.8;
 
@@ -188,16 +190,15 @@ label {
 .hero-tagline {
     margin-top: 25px;
 
-    font-size: 19px;
+    font-size: 20px;
 
-    font-weight: 800;
+    font-weight: 900;
 
     color: #86efac;
 }
 
-
 /* =========================================================
-   STATS
+   STATISTICS
    ========================================================= */
 
 .stats-grid {
@@ -212,7 +213,7 @@ label {
 }
 
 .stat-card {
-    padding: 25px;
+    padding: 25px 18px;
 
     text-align: center;
 
@@ -228,7 +229,8 @@ label {
 
     transition:
         transform 0.25s ease,
-        border-color 0.25s ease;
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
 .stat-card:hover {
@@ -236,18 +238,20 @@ label {
 
     border-color:
         rgba(74, 222, 128, 0.35);
+
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.22);
 }
 
 .stat-icon {
-    font-size: 27px;
-
+    font-size: 28px;
     margin-bottom: 10px;
 }
 
 .stat-number {
-    font-size: 25px;
+    font-size: 26px;
 
-    font-weight: 900;
+    font-weight: 950;
 
     color: #4ade80;
 }
@@ -260,31 +264,31 @@ label {
     font-size: 13px;
 }
 
-
 /* =========================================================
-   SECTIONS
+   SECTION HEADINGS
    ========================================================= */
 
 .section-heading {
     margin-top: 45px;
 
+    margin-bottom: 8px;
+
     font-size: 32px;
 
-    font-weight: 900;
+    font-weight: 950;
 
     color: #f0fdf4;
 }
 
 .section-description {
-    margin-top: 8px;
-
     margin-bottom: 20px;
 
     color: #86efac;
 
     line-height: 1.7;
-}
 
+    font-size: 15px;
+}
 
 /* =========================================================
    FILE UPLOADER
@@ -312,7 +316,6 @@ label {
         rgba(34, 197, 94, 0.04) !important;
 }
 
-
 /* =========================================================
    BUTTON
    ========================================================= */
@@ -326,7 +329,7 @@ label {
 
     font-size: 16px;
 
-    font-weight: 800;
+    font-weight: 850;
 
     color: #052e16;
 
@@ -352,7 +355,6 @@ label {
         0 15px 35px rgba(34, 197, 94, 0.30);
 }
 
-
 /* =========================================================
    PREVIEW
    ========================================================= */
@@ -371,24 +373,29 @@ label {
         1px solid rgba(255, 255, 255, 0.08);
 
     min-height: 200px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
 }
 
 .preview-title {
-    font-size: 22px;
+    font-size: 23px;
 
-    font-weight: 800;
+    font-weight: 900;
 
     color: #4ade80;
 }
 
 .preview-text {
-    margin-top: 15px;
+    margin-top: 14px;
 
     line-height: 1.7;
 
     color: #bbf7d0;
 }
-
 
 /* =========================================================
    RESULT
@@ -426,7 +433,7 @@ label {
 
     font-size: 42px;
 
-    font-weight: 900;
+    font-weight: 950;
 
     color: #4ade80;
 }
@@ -436,7 +443,7 @@ label {
 
     font-size: 20px;
 
-    font-weight: 800;
+    font-weight: 850;
 
     color: #f0fdf4;
 }
@@ -448,7 +455,7 @@ label {
 
     font-size: 16px;
 
-    font-weight: 700;
+    font-weight: 750;
 }
 
 .result-message {
@@ -460,7 +467,6 @@ label {
 
     color: #bbf7d0;
 }
-
 
 /* =========================================================
    TIPS
@@ -482,7 +488,6 @@ label {
     color: #d1fae5;
 }
 
-
 /* =========================================================
    CATEGORY CARDS
    ========================================================= */
@@ -503,11 +508,15 @@ label {
         1px solid rgba(255, 255, 255, 0.08);
 
     transition:
-        transform 0.25s ease;
+        transform 0.25s ease,
+        border-color 0.25s ease;
 }
 
 .info-card:hover {
     transform: translateY(-5px);
+
+    border-color:
+        rgba(74, 222, 128, 0.28);
 }
 
 .info-icon {
@@ -534,9 +543,8 @@ label {
     line-height: 1.5;
 }
 
-
 /* =========================================================
-   STEP CARDS
+   HOW IT WORKS
    ========================================================= */
 
 .step-card {
@@ -553,6 +561,13 @@ label {
 
     border:
         1px solid rgba(255, 255, 255, 0.08);
+
+    transition:
+        transform 0.25s ease;
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
 }
 
 .step-number {
@@ -587,7 +602,6 @@ label {
     font-size: 13px;
 }
 
-
 /* =========================================================
    DISCLAIMER
    ========================================================= */
@@ -611,7 +625,6 @@ label {
 
     font-size: 13px;
 }
-
 
 /* =========================================================
    FOOTER
@@ -669,24 +682,25 @@ label {
     font-size: 12px;
 }
 
-
 /* =========================================================
-   STREAMLIT UI CLEANUP
+   SIDEBAR
    ========================================================= */
 
 [data-testid="stSidebar"] {
-    background:
-        #04100a;
+    background: #04100a;
 }
 
 [data-testid="stSidebar"] * {
     color: #d1fae5;
 }
 
+/* =========================================================
+   ALERTS
+   ========================================================= */
+
 .stAlert {
     border-radius: 14px;
 }
-
 
 /* =========================================================
    RESPONSIVE
@@ -707,7 +721,6 @@ label {
         letter-spacing: -2px;
     }
 }
-
 
 @media (max-width: 600px) {
 
