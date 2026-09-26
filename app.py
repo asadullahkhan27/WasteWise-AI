@@ -3,14 +3,12 @@
 # AI-Powered Waste Classification & Recycling Assistant
 # ============================================================
 
-import base64
 import json
 from pathlib import Path
 
 import numpy as np
 import streamlit as st
 import tensorflow as tf
-
 from PIL import Image
 
 
@@ -27,7 +25,7 @@ st.set_page_config(
 
 
 # ============================================================
-# PATHS
+# PROJECT PATHS
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -59,7 +57,7 @@ SCHOOL_LOGO = (
 
 
 # ============================================================
-# SETTINGS
+# MODEL SETTINGS
 # ============================================================
 
 IMAGE_SIZE = (224, 224)
@@ -159,10 +157,7 @@ WASTE_INFO = {
 
 
 # ============================================================
-# SIMPLE CUSTOM CSS
-# ============================================================
-# CSS is inside a Python string.
-# It will be applied to Streamlit and will NOT appear as code.
+# SIMPLE CSS
 # ============================================================
 
 st.markdown(
@@ -183,24 +178,17 @@ st.markdown(
         opacity: 0.85;
     }
 
-    .logo-row {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 25px;
-        margin-bottom: 15px;
-    }
-
-    .logo-row img {
-        height: 55px;
-        width: auto;
-        object-fit: contain;
+    .logo-title {
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
     }
 
     .result-box {
         padding: 25px;
         border-radius: 18px;
-        border: 1px solid rgba(128,128,128,0.25);
+        border: 1px solid rgba(128, 128, 128, 0.25);
         margin-top: 20px;
         margin-bottom: 20px;
     }
@@ -238,84 +226,6 @@ st.markdown(
 
 
 # ============================================================
-# LOGO HELPER
-# ============================================================
-
-def image_to_base64(image_path):
-
-    if not image_path.exists():
-        return None
-
-    try:
-
-        with open(image_path, "rb") as image_file:
-
-            encoded = base64.b64encode(
-                image_file.read()
-            ).decode("utf-8")
-
-        return encoded
-
-    except Exception:
-
-        return None
-
-
-# ============================================================
-# LOAD LOGOS
-# ============================================================
-
-icodeguru_logo = image_to_base64(
-    ICODEGURU_LOGO
-)
-
-school_logo = image_to_base64(
-    SCHOOL_LOGO
-)
-
-
-# ============================================================
-# LOGO DISPLAY
-# ============================================================
-
-logo_html = ""
-
-
-if icodeguru_logo:
-
-    logo_html += f"""
-    <img
-        src="data:image/png;base64,{icodeguru_logo}"
-        alt="iCodeGuru Logo"
-    >
-    """
-
-
-if school_logo:
-
-    logo_html += f"""
-    <img
-        src="data:image/png;base64,{school_logo}"
-        alt="School Logo"
-    >
-    """
-
-
-if logo_html:
-
-    st.markdown(
-        f"""
-        <div class="logo-row">
-
-            {logo_html}
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-# ============================================================
 # LOAD CLASS NAMES
 # ============================================================
 
@@ -335,8 +245,7 @@ def load_class_names():
 
         with open(
             CLASS_NAMES_PATH,
-            "r",
-            encoding="utf-8"
+            "r"
         ) as file:
 
             return json.load(file)
@@ -362,7 +271,6 @@ CLASS_NAMES = load_class_names()
 def load_model():
 
     if not MODEL_PATH.exists():
-
         return None
 
     try:
@@ -384,18 +292,51 @@ model = load_model()
 
 
 # ============================================================
-# HEADER
+# HEADER LOGOS
+# ============================================================
+
+logo_col1, logo_col2 = st.columns(2)
+
+with logo_col1:
+
+    if ICODEGURU_LOGO.exists():
+
+        st.image(
+            str(ICODEGURU_LOGO),
+            width=160
+        )
+
+    else:
+
+        st.warning(
+            "iCodeGuru logo not found."
+        )
+
+
+with logo_col2:
+
+    if SCHOOL_LOGO.exists():
+
+        st.image(
+            str(SCHOOL_LOGO),
+            width=160
+        )
+
+    else:
+
+        st.warning(
+            "School logo not found."
+        )
+
+
+# ============================================================
+# MAIN HEADER
 # ============================================================
 
 st.markdown(
-    """
-    <div class="main-title">
-        ♻️ WasteWise AI
-    </div>
-    """,
+    '<div class="main-title">♻️ WasteWise AI</div>',
     unsafe_allow_html=True
 )
-
 
 st.markdown(
     """
@@ -408,8 +349,9 @@ st.markdown(
 
 
 st.info(
-    "Upload a waste image or use your camera and "
-    "WasteWise AI will classify it into one of four trained categories."
+    "Upload a waste image or use your camera. "
+    "WasteWise AI will classify it into one of four "
+    "trained waste categories."
 )
 
 
@@ -421,9 +363,7 @@ with st.sidebar:
 
     st.header("♻️ WasteWise AI")
 
-    st.markdown(
-        "### About the Project"
-    )
+    st.markdown("### About the Project")
 
     st.write(
         """
@@ -433,9 +373,7 @@ with st.sidebar:
         """
     )
 
-    st.markdown(
-        "### Supported Classes"
-    )
+    st.markdown("### Supported Classes")
 
     for class_name in CLASS_NAMES:
 
@@ -502,10 +440,6 @@ st.markdown(
 )
 
 
-# ============================================================
-# UPLOAD / CAMERA TABS
-# ============================================================
-
 upload_tab, camera_tab = st.tabs(
     [
         "📁 Upload Image",
@@ -525,18 +459,14 @@ camera_file = None
 with upload_tab:
 
     uploaded_file = st.file_uploader(
-
         "Choose an image",
-
         type=[
             "jpg",
             "jpeg",
             "png",
             "webp"
         ],
-
         help="Upload a clear image of the waste item.",
-
         key="waste_upload"
     )
 
@@ -548,9 +478,7 @@ with upload_tab:
 with camera_tab:
 
     camera_file = st.camera_input(
-
         "Take a picture of the waste item",
-
         key="waste_camera"
     )
 
@@ -593,12 +521,12 @@ if selected_file is not None:
         st.stop()
 
 
-    # ========================================================
+    # --------------------------------------------------------
     # DISPLAY IMAGE
-    # ========================================================
+    # --------------------------------------------------------
 
     st.markdown(
-        "### 🖼️ Selected Image"
+        "### 🖼️ Selected Waste Image"
     )
 
     st.image(
@@ -608,22 +536,19 @@ if selected_file is not None:
     )
 
 
-    # ========================================================
-    # PREDICTION BUTTON
-    # ========================================================
+    # --------------------------------------------------------
+    # ANALYZE BUTTON
+    # --------------------------------------------------------
 
     analyze_button = st.button(
-
         "🔍 Analyze Waste",
-
         type="primary",
-
         width="stretch"
     )
 
 
     # ========================================================
-    # ANALYZE
+    # PREDICTION
     # ========================================================
 
     if analyze_button:
@@ -632,90 +557,64 @@ if selected_file is not None:
             "🤖 WasteWise AI is analyzing the image..."
         ):
 
-            # ------------------------------------------------
-            # RESIZE IMAGE
-            # ------------------------------------------------
+            try:
 
-            processed_image = image.resize(
-                IMAGE_SIZE
-            )
+                # Resize image
+                processed_image = image.resize(
+                    IMAGE_SIZE
+                )
 
+                # Convert to NumPy
+                image_array = np.array(
+                    processed_image
+                ).astype("float32")
 
-            # ------------------------------------------------
-            # CONVERT TO NUMPY
-            # ------------------------------------------------
+                # Add batch dimension
+                image_array = np.expand_dims(
+                    image_array,
+                    axis=0
+                )
 
-            image_array = np.array(
-                processed_image
-            ).astype("float32")
+                # Prediction
+                predictions = model.predict(
+                    image_array,
+                    verbose=0
+                )[0]
 
+                # Highest probability
+                predicted_index = int(
+                    np.argmax(predictions)
+                )
 
-            # ------------------------------------------------
-            # ADD BATCH DIMENSION
-            # ------------------------------------------------
+                predicted_class = (
+                    CLASS_NAMES[predicted_index]
+                )
 
-            image_array = np.expand_dims(
-                image_array,
-                axis=0
-            )
-
-
-            # ------------------------------------------------
-            # PREDICTION
-            # ------------------------------------------------
-
-            predictions = model.predict(
-                image_array,
-                verbose=0
-            )[0]
-
-
-            # ------------------------------------------------
-            # TOP PREDICTION
-            # ------------------------------------------------
-
-            predicted_index = int(
-                np.argmax(predictions)
-            )
+                confidence = float(
+                    predictions[predicted_index]
+                )
 
 
-            if predicted_index >= len(CLASS_NAMES):
+            except Exception as error:
 
                 st.error(
-                    "Model output does not match "
-                    "class_names.json."
+                    f"Prediction failed: {error}"
                 )
 
                 st.stop()
 
 
-            predicted_class = CLASS_NAMES[
-                predicted_index
-            ]
-
-
-            confidence = float(
-                predictions[predicted_index]
-            )
-
-
         # ====================================================
-        # RESULT
+        # RESULT INFORMATION
         # ====================================================
 
         info = WASTE_INFO.get(
-
             predicted_class,
-
             {
                 "icon": "♻️",
-
-                "category":
-                    predicted_class,
-
+                "category": predicted_class,
                 "message":
                     "No additional information available.",
-
                 "tips": []
             }
         )
@@ -726,12 +625,14 @@ if selected_file is not None:
         category = info["category"]
 
 
+        # ====================================================
+        # AI PREDICTION
+        # ====================================================
+
         st.markdown(
-            """
-            <div class="section-title">
-                🤖 AI Prediction
-            </div>
-            """,
+            '<div class="section-title">'
+            '🤖 AI Prediction'
+            '</div>',
             unsafe_allow_html=True
         )
 
@@ -741,16 +642,12 @@ if selected_file is not None:
             <div class="result-box">
 
                 <div class="result-title">
-
                     {icon} {predicted_class}
-
                 </div>
 
                 <div class="confidence">
-
                     Confidence:
                     {confidence * 100:.2f}%
-
                 </div>
 
             </div>
@@ -783,13 +680,13 @@ if selected_file is not None:
 
             st.warning(
                 "The AI is not sufficiently confident. "
-                "Try uploading a clearer image with "
-                "the waste item more visible."
+                "Try uploading a clearer image with the "
+                "waste item more visible."
             )
 
 
         # ====================================================
-        # CATEGORY
+        # WASTE CATEGORY
         # ====================================================
 
         st.markdown(
@@ -815,7 +712,7 @@ if selected_file is not None:
 
 
         # ====================================================
-        # TIPS
+        # RECOMMENDED PRACTICES
         # ====================================================
 
         if info["tips"]:
@@ -832,7 +729,7 @@ if selected_file is not None:
 
 
         # ====================================================
-        # TOP 3 PREDICTIONS
+        # TOP PREDICTIONS
         # ====================================================
 
         st.markdown(
@@ -846,21 +743,11 @@ if selected_file is not None:
 
 
         for rank, index in enumerate(
-
             sorted_indices[:3],
-
             start=1
-
         ):
 
-            if index >= len(CLASS_NAMES):
-                continue
-
-
-            class_name = CLASS_NAMES[
-                index
-            ]
-
+            class_name = CLASS_NAMES[index]
 
             probability = float(
                 predictions[index]
@@ -873,7 +760,10 @@ if selected_file is not None:
 
 
             st.progress(
-                min(probability, 1.0)
+                min(
+                    probability,
+                    1.0
+                )
             )
 
 
@@ -883,7 +773,7 @@ if selected_file is not None:
 
 
         # ====================================================
-        # DISCLAIMER
+        # IMPORTANT NOTICE
         # ====================================================
 
         st.markdown("---")
@@ -913,12 +803,11 @@ else:
 
     st.write(
         """
-        1. Choose **Upload Image** or **Use Camera**.
-        2. Provide a clear image of the waste item.
-        3. Click **Analyze Waste**.
-        4. WasteWise AI predicts the waste category.
-        5. Review the confidence score.
-        6. Follow the displayed waste-management guidance.
+        1. Upload a clear waste image, or use your camera.
+        2. Click **Analyze Waste**.
+        3. WasteWise AI predicts the waste category.
+        4. Review the confidence score.
+        5. Follow the displayed waste-management guidance.
         """
     )
 
@@ -930,12 +819,8 @@ else:
 st.markdown(
     """
     <div class="footer">
-
-        ♻️ <b>WasteWise AI</b>
-        <br>
-
+        ♻️ <b>WasteWise AI</b><br>
         AI for Smarter Waste Classification & Awareness
-
     </div>
     """,
     unsafe_allow_html=True
