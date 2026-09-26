@@ -310,7 +310,7 @@ with logo_col2:
 
         st.image(
             str(ICODEGURU_LOGO),
-            width=110
+            width=170
         )
 
     else:
@@ -326,7 +326,7 @@ with logo_col3:
 
         st.image(
             str(SCHOOL_LOGO),
-            width=110
+            width=170
         )
 
     else:
