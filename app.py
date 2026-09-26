@@ -1002,7 +1002,7 @@ st.markdown(
     .logo-circle {
         width: 65px;
         height: 65px;
-        border-radius: 50%;
+        border-radius: 100%;
         object-fit: cover;
         border: 2px solid rgba(128, 128, 128, 0.25);
     }
