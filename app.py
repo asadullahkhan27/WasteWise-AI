@@ -1,4 +1,3 @@
-```python
 # ============================================================
 # WASTEWISE AI
 # AI-Powered Waste Classification & Recycling Assistant
@@ -1335,4 +1334,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-```
