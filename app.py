@@ -18,7 +18,7 @@ from PIL import Image
 # ============================================================
 
 st.set_page_config(
-    page_title="WasteWise AI",
+    page_title="WasteWise A",
     page_icon="♻️",
     layout="centered",
     initial_sidebar_state="expanded"
