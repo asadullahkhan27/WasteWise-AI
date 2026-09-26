@@ -26,7 +26,7 @@ st.set_page_config(
 
 
 # ============================================================
-# PROJECT PATHS
+# PATHS
 # ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -39,1042 +39,584 @@ SCHOOL_LOGO = BASE_DIR / "assets" / "school_logo.png"
 
 IMAGE_SIZE = (224, 224)
 
+# Confidence threshold
 CONFIDENCE_THRESHOLD = 0.60
 
 
 # ============================================================
 # CUSTOM CSS
-# ALL CSS IS INSIDE app.py
+# ALL CSS IS INSIDE APP.PY
 # ============================================================
 
 CUSTOM_CSS = """
 <style>
 
-/* ========================================================
-   GLOBAL
-   ======================================================== */
+html, body, [class*="css"] {
+    font-family: "Inter", "Segoe UI", sans-serif;
+}
 
-html,
-body,
-[data-testid="stAppViewContainer"] {
-
+.stApp {
     background:
         radial-gradient(
-            circle at top left,
-            rgba(34, 197, 94, 0.12),
-            transparent 35%
+            circle at 10% 10%,
+            rgba(34, 197, 94, 0.10),
+            transparent 28%
         ),
         radial-gradient(
-            circle at top right,
-            rgba(16, 185, 129, 0.10),
+            circle at 90% 15%,
+            rgba(16, 185, 129, 0.08),
             transparent 30%
         ),
-        #06130e;
-
+        #07130f;
+    color: #f3fdf7;
 }
 
-[data-testid="stAppViewContainer"] {
-
-    color: #ecfdf5;
-
-}
-
-.main {
-
-    background: transparent;
-
-}
-
-
-/* ========================================================
-   REMOVE DEFAULT TOP SPACE
-   ======================================================== */
+/* Main container */
 
 .block-container {
-
+    max-width: 1250px;
     padding-top: 2rem;
     padding-bottom: 3rem;
-    max-width: 1400px;
-
 }
 
 
-/* ========================================================
-   SIDEBAR
-   ======================================================== */
+/* Sidebar */
 
-[data-testid="stSidebar"] {
-
-    background:
-        linear-gradient(
-            180deg,
-            #082219 0%,
-            #061811 100%
-        );
-
-    border-right:
-        1px solid
-        rgba(74, 222, 128, 0.15);
-
+section[data-testid="stSidebar"] {
+    background: linear-gradient(
+        180deg,
+        #081a14 0%,
+        #06120f 100%
+    );
+    border-right: 1px solid rgba(255,255,255,0.08);
 }
 
-[data-testid="stSidebar"] * {
-
-    color: #ecfdf5;
-
+section[data-testid="stSidebar"] * {
+    color: #e8f8ee !important;
 }
 
 
-/* ========================================================
-   BRAND HEADER
-   ======================================================== */
+/* Header */
 
-.brand-left {
-
+.brand-wrapper {
     display: flex;
     align-items: center;
-    gap: 15px;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 0 10px 0;
+}
 
-    padding: 8px 0;
-
+.brand-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
 .brand-icon {
-
-    width: 58px;
-    height: 58px;
-
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    background: linear-gradient(
+        135deg,
+        #16a34a,
+        #059669
+    );
     display: flex;
     align-items: center;
     justify-content: center;
-
-    border-radius: 18px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #16a34a,
-            #22c55e
-        );
-
-    box-shadow:
-        0 10px 35px
-        rgba(34, 197, 94, 0.25);
-
-    font-size: 30px;
-
+    font-size: 29px;
+    box-shadow: 0 10px 30px rgba(16,185,129,0.20);
 }
 
 .brand-name {
-
-    font-size: 27px;
+    font-size: 23px;
     font-weight: 800;
-
-    color: #f0fdf4;
-
-    letter-spacing: -0.5px;
-
+    color: #ffffff;
+    margin: 0;
 }
 
 .brand-subtitle {
-
-    margin-top: 3px;
-
+    color: #9bc7ae;
     font-size: 13px;
-
-    color: #86efac;
-
+    margin-top: 3px;
 }
 
 
-/* ========================================================
-   LOGOS
-   ======================================================== */
+/* Logos */
 
 .logo-box {
-
-    min-height: 72px;
-
     display: flex;
-
     align-items: center;
+    gap: 10px;
+}
 
-    justify-content: center;
-
-    padding: 8px;
-
-    border-radius: 16px;
-
-    background:
-        rgba(255, 255, 255, 0.045);
-
-    border:
-        1px solid
-        rgba(134, 239, 172, 0.12);
-
-    backdrop-filter: blur(10px);
-
+.logo-box img {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 8px;
 }
 
 
-/* ========================================================
-   HERO
-   ======================================================== */
+/* Hero */
 
 .hero-wrapper {
-
-    margin-top: 28px;
-    margin-bottom: 28px;
-
-    padding: 55px 30px;
-
-    border-radius: 30px;
-
-    text-align: center;
-
+    margin-top: 25px;
+    padding: 50px 35px;
+    border-radius: 28px;
     background:
         linear-gradient(
             135deg,
-            rgba(20, 83, 45, 0.65),
-            rgba(6, 78, 59, 0.45)
-        );
-
-    border:
-        1px solid
-        rgba(74, 222, 128, 0.18);
-
+            rgba(22,163,74,0.20),
+            rgba(5,150,105,0.10)
+        ),
+        rgba(8, 29, 22, 0.92);
+    border: 1px solid rgba(74,222,128,0.16);
     box-shadow:
-        0 25px 80px
-        rgba(0, 0, 0, 0.25);
-
-}
-
-.hero-content {
-
-    max-width: 900px;
-
-    margin: auto;
-
+        0 25px 70px rgba(0,0,0,0.25),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+    text-align: center;
 }
 
 .hero-badge {
-
     display: inline-block;
-
-    padding: 9px 18px;
-
+    padding: 8px 16px;
     border-radius: 999px;
-
-    background:
-        rgba(34, 197, 94, 0.12);
-
-    border:
-        1px solid
-        rgba(74, 222, 128, 0.25);
-
-    color: #bbf7d0;
-
-    font-size: 14px;
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(74,222,128,0.25);
+    color: #86efac;
+    font-size: 13px;
     font-weight: 700;
-
     margin-bottom: 18px;
-
 }
 
 .hero-title {
-
-    margin: 0;
-
-    font-size: clamp(42px, 7vw, 72px);
-
+    font-size: clamp(38px, 6vw, 70px);
     font-weight: 900;
-
-    letter-spacing: -2px;
-
-    color: #f0fdf4;
-
-}
-
-.hero-title span {
-
-    color: #22c55e;
-
+    line-height: 1.05;
+    margin: 0;
+    background: linear-gradient(
+        90deg,
+        #ffffff,
+        #86efac,
+        #34d399
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .hero-subtitle {
-
-    max-width: 780px;
-
-    margin: 20px auto 0;
-
-    color: #bbf7d0;
-
+    max-width: 760px;
+    margin: 20px auto 0 auto;
+    color: #b9d8c5;
     font-size: 17px;
-
-    line-height: 1.7;
-
+    line-height: 1.8;
 }
 
 .hero-tagline {
-
     margin-top: 22px;
-
-    color: #4ade80;
-
-    font-size: 18px;
-
-    font-weight: 800;
-
+    color: #86efac;
+    font-size: 14px;
+    font-weight: 700;
 }
 
 
-/* ========================================================
-   STATISTICS
-   ======================================================== */
+/* Stats */
 
 .stats-grid {
-
     display: grid;
-
-    grid-template-columns:
-        repeat(4, 1fr);
-
-    gap: 18px;
-
-    margin: 25px 0 45px;
-
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 25px;
 }
 
 .stat-card {
-
-    padding: 25px 18px;
-
+    padding: 22px;
+    border-radius: 18px;
+    background: rgba(13, 37, 28, 0.82);
+    border: 1px solid rgba(255,255,255,0.07);
     text-align: center;
-
-    border-radius: 22px;
-
-    background:
-        rgba(255, 255, 255, 0.045);
-
-    border:
-        1px solid
-        rgba(134, 239, 172, 0.12);
-
-    box-shadow:
-        0 12px 35px
-        rgba(0, 0, 0, 0.18);
-
-    transition:
-        transform 0.25s ease,
-        border-color 0.25s ease;
-
+    transition: 0.25s ease;
 }
 
 .stat-card:hover {
-
-    transform: translateY(-5px);
-
-    border-color:
-        rgba(74, 222, 128, 0.35);
-
+    transform: translateY(-3px);
+    border-color: rgba(74,222,128,0.25);
 }
 
 .stat-icon {
-
-    font-size: 30px;
-
-    margin-bottom: 10px;
-
+    font-size: 27px;
+    margin-bottom: 8px;
 }
 
 .stat-number {
-
-    font-size: 28px;
-
-    font-weight: 900;
-
-    color: #4ade80;
-
+    font-size: 25px;
+    font-weight: 800;
+    color: #86efac;
 }
 
 .stat-label {
-
+    color: #91b6a1;
+    font-size: 12px;
     margin-top: 5px;
-
-    color: #a7f3d0;
-
-    font-size: 13px;
-
 }
 
 
-/* ========================================================
-   SECTION HEADINGS
-   ======================================================== */
+/* Section */
 
 .section-heading {
-
     margin-top: 45px;
-
-    font-size: 30px;
-
-    font-weight: 850;
-
-    color: #f0fdf4;
-
+    margin-bottom: 6px;
+    font-size: 28px;
+    font-weight: 800;
+    color: #ffffff;
 }
 
 .section-description {
-
-    margin-top: 8px;
+    color: #91b6a1;
     margin-bottom: 22px;
-
-    color: #86efac;
-
-    font-size: 15px;
-
-    line-height: 1.6;
-
+    line-height: 1.7;
 }
 
 
-/* ========================================================
-   FILE UPLOADER
-   ======================================================== */
+/* Tabs */
 
-[data-testid="stFileUploader"] {
-
-    background:
-        rgba(255, 255, 255, 0.035);
-
-    border:
-        1px solid
-        rgba(74, 222, 128, 0.15);
-
-    border-radius: 20px;
-
-    padding: 12px;
-
+button[data-baseweb="tab"] {
+    color: #9fc3ae !important;
+    font-weight: 700 !important;
 }
 
-[data-testid="stFileUploaderDropzone"] {
-
-    background:
-        rgba(6, 78, 59, 0.20);
-
-    border:
-        1px dashed
-        rgba(74, 222, 128, 0.35);
-
-    border-radius: 16px;
-
+button[data-baseweb="tab"][aria-selected="true"] {
+    color: #86efac !important;
 }
 
-[data-testid="stFileUploaderDropzoneInstructions"] {
-
-    color: #bbf7d0;
-
+div[data-baseweb="tab-highlight"] {
+    background-color: #22c55e !important;
 }
 
 
-/* ========================================================
-   BUTTON
-   ======================================================== */
+/* File uploader */
+
+section[data-testid="stFileUploaderDropzone"] {
+    background: rgba(13, 37, 28, 0.65);
+    border: 1px dashed rgba(74,222,128,0.30);
+    border-radius: 18px;
+}
+
+section[data-testid="stFileUploaderDropzone"]:hover {
+    border-color: #4ade80;
+}
+
+
+/* Camera */
+
+div[data-testid="stCameraInput"] {
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+
+/* Buttons */
 
 .stButton > button {
-
     width: 100%;
-
-    min-height: 52px;
-
     border: none;
-
-    border-radius: 15px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #16a34a,
-            #22c55e
-        );
-
+    border-radius: 14px;
+    padding: 14px 22px;
+    background: linear-gradient(
+        135deg,
+        #16a34a,
+        #059669
+    );
     color: white;
-
     font-size: 16px;
-
     font-weight: 800;
-
-    box-shadow:
-        0 12px 30px
-        rgba(34, 197, 94, 0.20);
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-
+    box-shadow: 0 10px 25px rgba(22,163,74,0.18);
+    transition: all 0.25s ease;
 }
 
 .stButton > button:hover {
-
     transform: translateY(-2px);
-
-    box-shadow:
-        0 16px 35px
-        rgba(34, 197, 94, 0.30);
-
+    box-shadow: 0 15px 30px rgba(22,163,74,0.28);
 }
 
 
-/* ========================================================
-   TABS
-   ======================================================== */
-
-.stTabs [data-baseweb="tab-list"] {
-
-    gap: 10px;
-
-    background:
-        rgba(255, 255, 255, 0.025);
-
-    padding: 8px;
-
-    border-radius: 16px;
-
-}
-
-.stTabs [data-baseweb="tab"] {
-
-    height: 48px;
-
-    padding: 0 20px;
-
-    border-radius: 12px;
-
-    color: #a7f3d0;
-
-    font-weight: 700;
-
-}
-
-.stTabs [aria-selected="true"] {
-
-    background:
-        rgba(34, 197, 94, 0.15);
-
-    color: #4ade80;
-
-}
-
-
-/* ========================================================
-   CAMERA
-   ======================================================== */
-
-[data-testid="stCameraInput"] {
-
-    border-radius: 20px;
-
-    overflow: hidden;
-
-}
-
-
-/* ========================================================
-   PREVIEW CARD
-   ======================================================== */
+/* Preview */
 
 .preview-card {
-
-    padding: 25px;
-
+    padding: 22px;
     border-radius: 20px;
-
-    background:
-        rgba(255, 255, 255, 0.045);
-
-    border:
-        1px solid
-        rgba(134, 239, 172, 0.12);
-
-    min-height: 150px;
-
+    background: rgba(13, 37, 28, 0.72);
+    border: 1px solid rgba(255,255,255,0.07);
+    margin-top: 18px;
 }
 
 .preview-title {
-
-    font-size: 21px;
-
+    font-size: 19px;
     font-weight: 800;
-
-    color: #4ade80;
-
-    margin-bottom: 12px;
-
+    color: #ffffff;
+    margin-bottom: 8px;
 }
 
 .preview-text {
-
-    color: #bbf7d0;
-
-    line-height: 1.7;
-
+    color: #91b6a1;
+    font-size: 13px;
 }
 
 
-/* ========================================================
-   RESULT BOX
-   ======================================================== */
+/* Result */
 
 .result-box {
-
-    margin-top: 30px;
-
-    padding: 35px;
-
-    text-align: center;
-
-    border-radius: 26px;
-
+    margin-top: 25px;
+    padding: 30px;
+    border-radius: 24px;
     background:
         linear-gradient(
             135deg,
-            rgba(22, 101, 52, 0.50),
-            rgba(6, 78, 59, 0.45)
+            rgba(22,163,74,0.13),
+            rgba(5,150,105,0.06)
         );
-
-    border:
-        1px solid
-        rgba(74, 222, 128, 0.30);
-
-    box-shadow:
-        0 20px 60px
-        rgba(0, 0, 0, 0.25);
-
+    border: 1px solid rgba(74,222,128,0.20);
 }
 
 .result-icon {
-
-    font-size: 60px;
-
+    font-size: 58px;
+    margin-bottom: 8px;
 }
 
 .result-title {
-
-    margin-top: 8px;
-
-    font-size: 38px;
-
+    font-size: 32px;
     font-weight: 900;
-
-    color: #f0fdf4;
-
+    color: #ffffff;
 }
 
 .confidence {
-
-    margin-top: 8px;
-
-    color: #4ade80;
-
-    font-size: 18px;
-
+    display: inline-block;
+    margin-top: 10px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: rgba(34,197,94,0.13);
+    color: #86efac;
     font-weight: 800;
-
+    font-size: 13px;
 }
 
 .result-category {
-
-    margin-top: 10px;
-
-    color: #bbf7d0;
-
+    margin-top: 16px;
+    color: #86efac;
     font-size: 16px;
-
-    font-weight: 700;
-
+    font-weight: 800;
 }
 
 .result-message {
-
-    max-width: 750px;
-
-    margin: 18px auto 0;
-
-    color: #d1fae5;
-
+    margin-top: 10px;
+    color: #b9d8c5;
     line-height: 1.7;
-
 }
 
 
-/* ========================================================
-   TIP CARD
-   ======================================================== */
+/* Tips */
 
 .tip-card {
+    margin-top: 18px;
+    padding: 22px;
+    border-radius: 18px;
+    background: rgba(8, 27, 20, 0.85);
+    border: 1px solid rgba(255,255,255,0.06);
+}
 
-    margin: 8px 0;
+.tip-title {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
 
-    padding: 14px 18px;
-
-    border-radius: 13px;
-
-    background:
-        rgba(34, 197, 94, 0.07);
-
-    border-left:
-        4px solid
-        #22c55e;
-
-    color: #d1fae5;
-
+.tip-item {
+    padding: 8px 0;
+    color: #b9d8c5;
 }
 
 
-/* ========================================================
-   CATEGORY CARDS
-   ======================================================== */
+/* Information Cards */
 
 .info-card {
-
-    height: 100%;
-
-    padding: 25px 18px;
-
-    text-align: center;
-
+    padding: 25px;
     border-radius: 20px;
-
-    background:
-        rgba(255, 255, 255, 0.045);
-
-    border:
-        1px solid
-        rgba(134, 239, 172, 0.12);
-
-    transition:
-        transform 0.25s ease;
-
-}
-
-.info-card:hover {
-
-    transform: translateY(-5px);
-
+    background: rgba(13, 37, 28, 0.75);
+    border: 1px solid rgba(255,255,255,0.07);
+    height: 100%;
 }
 
 .info-icon {
-
-    font-size: 40px;
-
-    margin-bottom: 12px;
-
+    font-size: 35px;
+    margin-bottom: 10px;
 }
 
 .info-title {
-
-    font-size: 19px;
-
+    font-size: 20px;
     font-weight: 800;
-
-    color: #f0fdf4;
-
+    color: #ffffff;
 }
 
 .info-text {
-
-    margin-top: 7px;
-
-    color: #86efac;
-
-    font-size: 13px;
-
+    color: #94b9a3;
+    line-height: 1.7;
+    margin-top: 8px;
 }
 
 
-/* ========================================================
-   HOW IT WORKS
-   ======================================================== */
+/* Steps */
 
 .step-card {
-
-    height: 100%;
-
-    padding: 25px 18px;
-
-    text-align: center;
-
+    padding: 25px;
     border-radius: 20px;
-
-    background:
-        rgba(255, 255, 255, 0.04);
-
-    border:
-        1px solid
-        rgba(134, 239, 172, 0.11);
-
+    background: rgba(13, 37, 28, 0.70);
+    border: 1px solid rgba(255,255,255,0.07);
+    height: 100%;
 }
 
 .step-number {
-
     display: inline-flex;
-
     width: 38px;
     height: 38px;
-
+    border-radius: 50%;
     align-items: center;
     justify-content: center;
-
-    border-radius: 50%;
-
-    background:
-        rgba(34, 197, 94, 0.14);
-
-    color: #4ade80;
-
-    font-size: 13px;
-
+    background: #16a34a;
+    color: white;
     font-weight: 900;
-
+    margin-bottom: 14px;
 }
 
 .step-icon {
-
-    margin-top: 12px;
-
-    font-size: 35px;
-
+    font-size: 28px;
+    margin-bottom: 8px;
 }
 
 .step-title {
-
-    margin-top: 10px;
-
     font-size: 18px;
-
     font-weight: 800;
-
-    color: #f0fdf4;
-
 }
 
 .step-text {
-
     margin-top: 8px;
-
-    color: #86efac;
-
-    font-size: 13px;
-
-    line-height: 1.6;
-
+    color: #91b6a1;
+    line-height: 1.65;
 }
 
 
-/* ========================================================
-   DISCLAIMER
-   ======================================================== */
+/* Disclaimer */
 
 .disclaimer {
-
-    margin-top: 45px;
-
-    padding: 20px 22px;
-
-    border-radius: 18px;
-
-    background:
-        rgba(234, 179, 8, 0.07);
-
-    border:
-        1px solid
-        rgba(250, 204, 21, 0.20);
-
-    color: #fef3c7;
-
+    margin-top: 35px;
+    padding: 18px 20px;
+    border-radius: 16px;
+    background: rgba(120,53,15,0.16);
+    border: 1px solid rgba(251,191,36,0.18);
+    color: #d9c58c;
+    font-size: 13px;
     line-height: 1.7;
-
 }
 
 
-/* ========================================================
-   FOOTER
-   ======================================================== */
+/* Footer */
 
 .footer-box {
-
-    margin-top: 45px;
-
-    padding: 35px 20px;
-
+    margin-top: 55px;
+    padding: 35px 20px 15px 20px;
+    border-top: 1px solid rgba(255,255,255,0.08);
     text-align: center;
-
-    border-top:
-        1px solid
-        rgba(134, 239, 172, 0.12);
-
 }
 
 .footer-title {
-
-    font-size: 25px;
-
-    font-weight: 900;
-
-    color: #4ade80;
-
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
 }
 
 .footer-subtitle {
-
-    margin-top: 8px;
-
-    color: #a7f3d0;
-
+    color: #91b6a1;
+    margin-top: 7px;
 }
 
 .footer-partners {
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    gap: 10px;
-
     margin-top: 18px;
-
-    color: #d1fae5;
-
+    color: #86efac;
     font-weight: 700;
-
 }
 
 .footer-small {
-
-    margin-top: 12px;
-
-    color: #6ee7b7;
-
+    margin-top: 16px;
+    color: #617f6e;
     font-size: 12px;
-
 }
 
 
-/* ========================================================
-   ALERTS
-   ======================================================== */
+/* Alerts */
 
-[data-testid="stAlert"] {
-
-    border-radius: 15px;
-
+div[data-testid="stAlert"] {
+    border-radius: 14px;
 }
 
 
-/* ========================================================
-   PROGRESS BAR
-   ======================================================== */
+/* Progress bar */
 
-[data-testid="stProgress"] > div > div {
+div[data-testid="stProgressBar"] > div {
+    border-radius: 20px;
+}
 
-    background:
-        linear-gradient(
-            90deg,
-            #16a34a,
-            #4ade80
-        );
-
+div[data-testid="stProgressBar"] > div > div {
+    border-radius: 20px;
+    background: linear-gradient(
+        90deg,
+        #16a34a,
+        #34d399
+    );
 }
 
 
-/* ========================================================
-   IMAGE
-   ======================================================== */
+/* Images */
 
-[data-testid="stImage"] {
-
-    border-radius: 18px;
-
-    overflow: hidden;
-
+img {
+    border-radius: 16px;
 }
 
 
-/* ========================================================
-   RESPONSIVE DESIGN
-   ======================================================== */
+/* Responsive */
 
 @media (max-width: 900px) {
 
     .stats-grid {
-
-        grid-template-columns:
-            repeat(2, 1fr);
-
-    }
-
-    .hero-title {
-
-        font-size: 48px;
-
-    }
-
-}
-
-
-@media (max-width: 600px) {
-
-    .block-container {
-
-        padding-left: 1rem;
-        padding-right: 1rem;
-
-    }
-
-    .stats-grid {
-
-        grid-template-columns:
-            1fr;
-
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .hero-wrapper {
-
-        padding: 35px 18px;
-
-        border-radius: 22px;
-
+        padding: 35px 20px;
     }
 
     .hero-title {
+        font-size: 42px;
+    }
+}
 
-        font-size: 40px;
+@media (max-width: 600px) {
 
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-title {
+        font-size: 36px;
     }
 
     .hero-subtitle {
-
-        font-size: 14px;
-
+        font-size: 15px;
     }
 
-    .brand-name {
-
-        font-size: 22px;
-
+    .brand-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
     }
-
-    .brand-icon {
-
-        width: 48px;
-        height: 48px;
-
-        font-size: 25px;
-
-    }
-
 }
 
 </style>
@@ -1082,7 +624,9 @@ body,
 
 
 # ============================================================
-# APPLY CUSTOM CSS
+# APPLY CSS
+# IMPORTANT:
+# CSS IS RENDERED, NOT DISPLAYED AS CODE
 # ============================================================
 
 st.markdown(
@@ -1092,22 +636,20 @@ st.markdown(
 
 
 # ============================================================
-# IMAGE TO BASE64
+# HELPER FUNCTIONS
 # ============================================================
 
 def image_to_base64(image_path):
+    """
+    Convert local image to Base64 for displaying
+    inside HTML.
+    """
 
     if not image_path.exists():
-
         return None
 
     try:
-
-        with open(
-            image_path,
-            "rb"
-        ) as image_file:
-
+        with open(image_path, "rb") as image_file:
             encoded = base64.b64encode(
                 image_file.read()
             ).decode("utf-8")
@@ -1115,21 +657,94 @@ def image_to_base64(image_path):
         return encoded
 
     except Exception:
-
         return None
 
 
-# ============================================================
-# LOAD LOGOS
-# ============================================================
+@st.cache_resource
+def load_model():
+    """
+    Load trained TensorFlow model.
+    """
 
-icodeguru_logo = image_to_base64(
-    ICODEGURU_LOGO
-)
+    if not MODEL_PATH.exists():
+        raise FileNotFoundError(
+            f"Model file not found: {MODEL_PATH}"
+        )
 
-school_logo = image_to_base64(
-    SCHOOL_LOGO
-)
+    model = tf.keras.models.load_model(
+        MODEL_PATH
+    )
+
+    return model
+
+
+@st.cache_data
+def load_class_names():
+    """
+    Load class names from JSON.
+    """
+
+    if not CLASS_NAMES_PATH.exists():
+        raise FileNotFoundError(
+            f"Class names file not found: {CLASS_NAMES_PATH}"
+        )
+
+    with open(
+        CLASS_NAMES_PATH,
+        "r",
+        encoding="utf-8"
+    ) as file:
+
+        return json.load(file)
+
+
+def predict_waste(image, model, class_names):
+    """
+    Run prediction on an image.
+    """
+
+    image = image.convert("RGB")
+
+    resized_image = image.resize(
+        IMAGE_SIZE
+    )
+
+    image_array = np.array(
+        resized_image
+    ).astype(np.float32)
+
+    image_array = np.expand_dims(
+        image_array,
+        axis=0
+    )
+
+    predictions = model.predict(
+        image_array,
+        verbose=0
+    )[0]
+
+    predicted_index = int(
+        np.argmax(predictions)
+    )
+
+    if predicted_index >= len(class_names):
+        raise ValueError(
+            "Model output does not match class_names.json."
+        )
+
+    predicted_class = class_names[
+        predicted_index
+    ]
+
+    confidence = float(
+        predictions[predicted_index]
+    )
+
+    return (
+        predicted_class,
+        confidence,
+        predictions
+    )
 
 
 # ============================================================
@@ -1151,17 +766,11 @@ WASTE_INFO = {
             "separate from ordinary recyclable waste.",
 
         "tips": [
-
             "Keep hazardous materials separate.",
-
             "Avoid direct contact with unknown substances.",
-
             "Do not burn hazardous waste.",
-
             "Follow local hazardous-waste disposal guidance."
-
         ]
-
     },
 
     "Non-Recyclable": {
@@ -1177,17 +786,11 @@ WASTE_INFO = {
             "waste-management rules.",
 
         "tips": [
-
             "Keep it separate from recyclable materials.",
-
             "Check local disposal guidelines.",
-
             "Avoid contaminating recyclable waste.",
-
             "Reduce unnecessary single-use materials."
-
         ]
-
     },
 
     "Organic": {
@@ -1203,17 +806,11 @@ WASTE_INFO = {
             "appropriate composting system is available.",
 
         "tips": [
-
             "Separate organic waste from recyclables.",
-
             "Use a suitable composting system where available.",
-
             "Keep compostable material free from contamination.",
-
             "Follow local composting guidelines."
-
         ]
-
     },
 
     "Recyclable": {
@@ -1229,120 +826,66 @@ WASTE_INFO = {
             "recycling system and material requirements.",
 
         "tips": [
-
             "Keep recyclable materials clean and dry.",
-
             "Separate materials according to local rules.",
-
             "Avoid contaminated recyclable materials.",
-
             "Check your local recycling guidelines."
-
         ]
-
     }
-
 }
 
 
 # ============================================================
-# LOAD CLASS NAMES
+# LOAD LOGOS
 # ============================================================
 
-@st.cache_data
-def load_class_names():
+icodeguru_logo = image_to_base64(
+    ICODEGURU_LOGO
+)
 
-    default_classes = [
-
-        "Hazardous",
-        "Non-Recyclable",
-        "Organic",
-        "Recyclable"
-
-    ]
-
-    if not CLASS_NAMES_PATH.exists():
-
-        return default_classes
-
-    try:
-
-        with open(
-            CLASS_NAMES_PATH,
-            "r",
-            encoding="utf-8"
-        ) as file:
-
-            classes = json.load(file)
-
-        if not isinstance(
-            classes,
-            list
-        ):
-
-            return default_classes
-
-        return classes
-
-    except Exception:
-
-        return default_classes
-
-
-CLASS_NAMES = load_class_names()
-
-
-# ============================================================
-# LOAD MODEL
-# ============================================================
-
-@st.cache_resource
-def load_model():
-
-    if not MODEL_PATH.exists():
-
-        return (
-            None,
-            f"Model file not found: {MODEL_PATH}"
-        )
-
-    try:
-
-        loaded_model = tf.keras.models.load_model(
-            MODEL_PATH
-        )
-
-        return loaded_model, None
-
-    except Exception as error:
-
-        return (
-            None,
-            str(error)
-        )
-
-
-model, model_error = load_model()
-
-
-# ============================================================
-# BRAND HEADER
-# ============================================================
-
-header_left, header_right = st.columns(
-    [2.2, 1.8],
-    vertical_alignment="center"
+school_logo = image_to_base64(
+    SCHOOL_LOGO
 )
 
 
 # ============================================================
-# LEFT BRAND
+# HEADER
 # ============================================================
 
-with header_left:
+icodeguru_html = ""
 
-    st.markdown(
-        """
+if icodeguru_logo:
+    icodeguru_html = f"""
+        <img
+            src="data:image/png;base64,{icodeguru_logo}"
+            alt="iCodeGuru"
+        >
+    """
+else:
+    icodeguru_html = """
+        <span>iCodeGuru</span>
+    """
+
+
+school_html = ""
+
+if school_logo:
+    school_html = f"""
+        <img
+            src="data:image/png;base64,{school_logo}"
+            alt="School"
+        >
+    """
+else:
+    school_html = """
+        <span>School Exhibition</span>
+    """
+
+
+st.markdown(
+    f"""
+    <div class="brand-wrapper">
+
         <div class="brand-left">
 
             <div class="brand-icon">
@@ -1350,7 +893,6 @@ with header_left:
             </div>
 
             <div>
-
                 <div class="brand-name">
                     WasteWise AI
                 </div>
@@ -1358,138 +900,15 @@ with header_left:
                 <div class="brand-subtitle">
                     AI-Powered Waste Classification
                 </div>
-
             </div>
 
         </div>
-        """,
-        unsafe_allow_html=True
-    )
 
+        <div class="logo-box">
 
-# ============================================================
-# RIGHT LOGOS
-# ============================================================
+            {icodeguru_html}
 
-with header_right:
-
-    logo_left, logo_right = st.columns(
-        2,
-        vertical_alignment="center"
-    )
-
-
-    # iCodeGuru
-    with logo_left:
-
-        if icodeguru_logo:
-
-            st.markdown(
-                f"""
-                <div class="logo-box">
-
-                    <img
-                        src="data:image/png;base64,{icodeguru_logo}"
-                        style="
-                            width:100px;
-                            max-height:70px;
-                            object-fit:contain;
-                        "
-                    />
-
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        else:
-
-            st.markdown(
-                """
-                <div class="logo-box">
-
-                    <div class="brand-name">
-                        iCodeGuru
-                    </div>
-
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-
-    # School
-    with logo_right:
-
-        if school_logo:
-
-            st.markdown(
-                f"""
-                <div class="logo-box">
-
-                    <img
-                        src="data:image/png;base64,{school_logo}"
-                        style="
-                            width:100px;
-                            max-height:70px;
-                            object-fit:contain;
-                        "
-                    />
-
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        else:
-
-            st.markdown(
-                """
-                <div class="logo-box">
-
-                    <div class="brand-name">
-                        🏫 School
-                    </div>
-
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-
-st.divider()
-
-
-# ============================================================
-# HERO
-# ============================================================
-
-st.markdown(
-    """
-    <div class="hero-wrapper">
-
-        <div class="hero-content">
-
-            <div class="hero-badge">
-                ♻️ AI • Computer Vision • Sustainability
-            </div>
-
-            <h1 class="hero-title">
-                WasteWise <span>AI</span>
-            </h1>
-
-            <div class="hero-subtitle">
-
-                An AI-powered waste classification and
-                recycling awareness assistant designed to
-                demonstrate how computer vision can support
-                smarter waste management.
-
-            </div>
-
-            <div class="hero-tagline">
-                🌱 Smarter Waste. Cleaner Future.
-            </div>
+            {school_html}
 
         </div>
 
@@ -1500,7 +919,39 @@ st.markdown(
 
 
 # ============================================================
-# STATISTICS
+# HERO SECTION
+# ============================================================
+
+st.markdown(
+    """
+    <div class="hero-wrapper">
+
+        <div class="hero-badge">
+            🤖 AI • ♻️ Sustainability • 🌱 Smart Waste
+        </div>
+
+        <h1 class="hero-title">
+            WasteWise AI
+        </h1>
+
+        <div class="hero-subtitle">
+            An AI-powered waste classification and recycling
+            assistant that helps identify waste categories
+            from images and provides practical disposal guidance.
+        </div>
+
+        <div class="hero-tagline">
+            Turn Waste into Better Decisions.
+        </div>
+
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# ============================================================
+# PROJECT STATS
 # ============================================================
 
 st.markdown(
@@ -1508,67 +959,35 @@ st.markdown(
     <div class="stats-grid">
 
         <div class="stat-card">
-
-            <div class="stat-icon">
-                🤖
-            </div>
-
-            <div class="stat-number">
-                AI
-            </div>
-
+            <div class="stat-icon">🤖</div>
+            <div class="stat-number">AI</div>
             <div class="stat-label">
-                Computer Vision
+                Image Classification
             </div>
-
         </div>
 
         <div class="stat-card">
-
-            <div class="stat-icon">
-                ♻️
-            </div>
-
-            <div class="stat-number">
-                4
-            </div>
-
+            <div class="stat-icon">♻️</div>
+            <div class="stat-number">4</div>
             <div class="stat-label">
                 Waste Categories
             </div>
-
         </div>
 
         <div class="stat-card">
-
-            <div class="stat-icon">
-                📷
-            </div>
-
-            <div class="stat-number">
-                224×224
-            </div>
-
+            <div class="stat-icon">📷</div>
+            <div class="stat-number">2</div>
             <div class="stat-label">
-                Input Resolution
+                Image Input Methods
             </div>
-
         </div>
 
         <div class="stat-card">
-
-            <div class="stat-icon">
-                🎯
-            </div>
-
-            <div class="stat-number">
-                74.14%
-            </div>
-
+            <div class="stat-icon">🌱</div>
+            <div class="stat-number">AI</div>
             <div class="stat-label">
-                Validation Accuracy
+                Sustainability Assistant
             </div>
-
         </div>
 
     </div>
@@ -1584,126 +1003,59 @@ st.markdown(
 with st.sidebar:
 
     st.markdown(
-        "## ♻️ WasteWise AI"
-    )
-
-    st.markdown(
         """
-        ### About
+        ## ♻️ WasteWise AI
 
-        WasteWise AI uses computer vision to classify
-        waste images into four broad categories.
+        ### About the Project
+
+        WasteWise AI uses a trained deep-learning image
+        classification model to identify common waste categories.
 
         ### Supported Categories
 
-        ☣️ Hazardous
+        - ☣️ Hazardous
+        - 🚫 Non-Recyclable
+        - 🌱 Organic
+        - ♻️ Recyclable
 
-        🚫 Non-Recyclable
+        ### Technology
 
-        🌱 Organic
+        - Python
+        - TensorFlow
+        - EfficientNetB0
+        - Streamlit
+        - NumPy
+        - Pillow
 
-        ♻️ Recyclable
+        ### Project Workflow
+
+        Dataset → Training → Model → Streamlit → Prediction
 
         ---
-
-        **Model:** EfficientNetB0
-
-        **Input:** 224 × 224
-
-        **AI Type:** Image Classification
-        """
-    )
-
-    st.divider()
-
-    if model is not None:
-
-        st.success(
-            "AI Model Loaded"
-        )
-
-    else:
-
-        st.error(
-            "AI Model Not Loaded"
-        )
-
-
-# ============================================================
-# MODEL ERROR
-# ============================================================
-
-if model is None:
-
-    st.error(
-        "⚠️ WasteWise AI model could not be loaded."
-    )
-
-    st.code(
-        str(model_error)
-    )
-
-    st.markdown(
-        "### Expected Project Structure"
-    )
-
-    st.code(
-        """
-WasteWise-AI/
-│
-├── app.py
-├── requirements.txt
-│
-├── assets/
-│   ├── icodeguru_logo.png
-│   └── school_logo.png
-│
-└── model/
-    ├── wastewise_model.keras
-    └── class_names.json
         """,
-        language="text"
+        unsafe_allow_html=True
     )
 
-    if MODEL_PATH.parent.exists():
-
-        model_files = [
-            file.name
-            for file in MODEL_PATH.parent.iterdir()
-        ]
-
-        st.write(
-            "Files currently inside model folder:"
-        )
-
-        st.write(
-            model_files
-        )
-
-    else:
-
-        st.warning(
-            "The model folder does not exist."
-        )
-
-    st.stop()
+    st.info(
+        "For demonstration and educational purposes. "
+        "Always follow local waste-management rules."
+    )
 
 
 # ============================================================
-# ANALYZE SECTION
+# INPUT SECTION
 # ============================================================
 
 st.markdown(
+    '<div class="section-heading">🔍 Analyze Your Waste</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
     """
-    <div class="section-heading">
-        🔍 Analyze Your Waste
-    </div>
-
     <div class="section-description">
-
-        Upload a clear image of a waste item or use your
-        camera to capture one for AI analysis.
-
+        Upload an image or use your camera to let WasteWise AI
+        classify the waste item.
     </div>
     """,
     unsafe_allow_html=True
@@ -1711,13 +1063,8 @@ st.markdown(
 
 
 # ============================================================
-# IMAGE SOURCE
+# INPUT TABS
 # ============================================================
-
-st.markdown(
-    "### 📸 Choose Image Source"
-)
-
 
 upload_tab, camera_tab = st.tabs(
     [
@@ -1732,30 +1079,10 @@ camera_file = None
 
 
 # ============================================================
-# UPLOAD TAB
+# UPLOAD IMAGE
 # ============================================================
 
 with upload_tab:
-
-    st.markdown(
-        """
-        <div class="preview-card">
-
-            <div class="preview-title">
-                📁 Upload Waste Image
-            </div>
-
-            <div class="preview-text">
-
-                Select a JPG, JPEG, PNG or WEBP image
-                from your device.
-
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
 
     uploaded_file = st.file_uploader(
         "Upload Waste Image",
@@ -1771,30 +1098,10 @@ with upload_tab:
 
 
 # ============================================================
-# CAMERA TAB
+# CAMERA
 # ============================================================
 
 with camera_tab:
-
-    st.markdown(
-        """
-        <div class="preview-card">
-
-            <div class="preview-title">
-                📷 Capture Waste Image
-            </div>
-
-            <div class="preview-text">
-
-                Allow camera access and take a clear
-                photo of the waste item.
-
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
 
     camera_file = st.camera_input(
         "Take a picture of the waste item",
@@ -1803,25 +1110,22 @@ with camera_tab:
 
 
 # ============================================================
-# SELECT SOURCE
+# SELECT IMAGE
 # ============================================================
 
 if camera_file is not None:
 
     selected_file = camera_file
-
     selected_source = "Camera"
 
 elif uploaded_file is not None:
 
     selected_file = uploaded_file
-
     selected_source = "Uploaded Image"
 
 else:
 
     selected_file = None
-
     selected_source = None
 
 
@@ -1837,60 +1141,16 @@ if selected_file is not None:
             selected_file
         ).convert("RGB")
 
-    except Exception:
-
-        st.error(
-            "Unable to open this image. "
-            "Please upload or capture a valid image."
-        )
-
-        st.stop()
-
-
-    st.markdown(
-        "### 📸 Image Preview"
-    )
-
-
-    preview_left, preview_right = st.columns(
-        [1, 1],
-        vertical_alignment="center"
-    )
-
-
-    with preview_left:
-
-        st.image(
-            image,
-            caption=selected_source,
-            use_container_width=True
-        )
-
-
-    with preview_right:
-
         st.markdown(
-            f"""
+            """
             <div class="preview-card">
 
                 <div class="preview-title">
-                    ✅ Image Ready
+                    🖼️ Selected Waste Image
                 </div>
 
                 <div class="preview-text">
-
-                    Source:
-                    <strong>{selected_source}</strong>
-
-                    <br><br>
-
-                    Your image is ready for AI analysis.
-
-                    <br><br>
-
-                    Click the button below to classify
-                    the waste category.
-
+                    Source: Your selected image
                 </div>
 
             </div>
@@ -1898,404 +1158,499 @@ if selected_file is not None:
             unsafe_allow_html=True
         )
 
+        st.image(
+            image,
+            use_container_width=True
+        )
 
-    # ========================================================
-    # ANALYZE BUTTON
-    # ========================================================
+        # ====================================================
+        # ANALYZE BUTTON
+        # ====================================================
 
-    analyze_button = st.button(
-        "♻️ Analyze Waste",
-        use_container_width=True,
-        key="analyze_waste"
-    )
+        analyze_button = st.button(
+            "♻️ Analyze Waste",
+            type="primary",
+            use_container_width=True
+        )
 
+        if analyze_button:
 
-    # ========================================================
-    # AI ANALYSIS
-    # ========================================================
+            with st.spinner(
+                "🤖 AI is analyzing the waste image..."
+            ):
 
-    if analyze_button:
+                try:
 
-        with st.spinner(
-            "🤖 AI is analyzing the image..."
-        ):
+                    # Load model
+                    model = load_model()
 
-            try:
+                    # Load class names
+                    class_names = load_class_names()
 
-                # ------------------------------------------------
-                # RESIZE
-                # ------------------------------------------------
-
-                resized_image = image.resize(
-                    IMAGE_SIZE
-                )
-
-
-                # ------------------------------------------------
-                # NUMPY
-                # ------------------------------------------------
-
-                image_array = np.array(
-                    resized_image
-                ).astype(
-                    np.float32
-                )
-
-
-                # ------------------------------------------------
-                # BATCH DIMENSION
-                # ------------------------------------------------
-
-                image_array = np.expand_dims(
-                    image_array,
-                    axis=0
-                )
-
-
-                # ------------------------------------------------
-                # PREDICTION
-                # ------------------------------------------------
-
-                predictions = model.predict(
-                    image_array,
-                    verbose=0
-                )[0]
-
-
-                # ------------------------------------------------
-                # CLASS
-                # ------------------------------------------------
-
-                predicted_index = int(
-                    np.argmax(predictions)
-                )
-
-
-                if predicted_index >= len(
-                    CLASS_NAMES
-                ):
-
-                    raise ValueError(
-                        "Model output does not match "
-                        "class_names.json."
+                    # Predict
+                    (
+                        predicted_class,
+                        confidence,
+                        predictions
+                    ) = predict_waste(
+                        image,
+                        model,
+                        class_names
                     )
 
-
-                predicted_class = CLASS_NAMES[
-                    predicted_index
-                ]
-
-
-                confidence = float(
-                    predictions[predicted_index]
-                )
-
-
-                # ------------------------------------------------
-                # INFORMATION
-                # ------------------------------------------------
-
-                info = WASTE_INFO.get(
-                    predicted_class,
-
-                    {
-                        "icon": "♻️",
-
-                        "category":
-                            predicted_class,
-
-                        "message":
-                            "The AI classified this image.",
-
-                        "tips": []
-
-                    }
-                )
-
-
-                # ------------------------------------------------
-                # RESULT
-                # ------------------------------------------------
-
-                st.markdown(
-                    f"""
-                    <div class="result-box">
-
-                        <div class="result-icon">
-                            {info["icon"]}
-                        </div>
-
-                        <div class="result-title">
-                            {predicted_class}
-                        </div>
-
-                        <div class="confidence">
-
-                            Confidence:
-                            {confidence * 100:.2f}%
-
-                        </div>
-
-                        <div class="result-category">
-
-                            {info["category"]}
-
-                        </div>
-
-                        <div class="result-message">
-
-                            {info["message"]}
-
-                        </div>
-
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
-
-                # ------------------------------------------------
-                # CONFIDENCE
-                # ------------------------------------------------
-
-                if confidence < CONFIDENCE_THRESHOLD:
-
-                    st.warning(
-                        "⚠️ The model confidence is relatively "
-                        "low. Please treat this result as an "
-                        "AI demonstration rather than a definitive "
-                        "waste-disposal decision."
+                    # Get information
+                    info = WASTE_INFO.get(
+                        predicted_class,
+                        {
+                            "icon": "♻️",
+                            "category": predicted_class,
+                            "message":
+                                "Prediction completed.",
+                            "tips": []
+                        }
                     )
 
-                else:
-
-                    st.success(
-                        "✅ AI classification completed successfully."
-                    )
-
-
-                # ------------------------------------------------
-                # TIPS
-                # ------------------------------------------------
-
-                st.markdown(
-                    "### 💡 Waste Management Tips"
-                )
-
-
-                for tip in info["tips"]:
+                    # ====================================================
+                    # RESULT
+                    # ====================================================
 
                     st.markdown(
                         f"""
-                        <div class="tip-card">
-                            ✅ {tip}
+                        <div class="result-box">
+
+                            <div class="result-icon">
+                                {info["icon"]}
+                            </div>
+
+                            <div class="result-title">
+                                {predicted_class}
+                            </div>
+
+                            <div class="confidence">
+                                Confidence:
+                                {confidence * 100:.2f}%
+                            </div>
+
+                            <div class="result-category">
+                                Category:
+                                {info["category"]}
+                            </div>
+
+                            <div class="result-message">
+                                {info["message"]}
+                            </div>
+
                         </div>
                         """,
                         unsafe_allow_html=True
                     )
 
+                    # ====================================================
+                    # LOW CONFIDENCE WARNING
+                    # ====================================================
 
-                # ------------------------------------------------
-                # PREDICTION BREAKDOWN
-                # ------------------------------------------------
+                    if confidence < CONFIDENCE_THRESHOLD:
 
-                st.markdown(
-                    "### 📊 AI Prediction Breakdown"
-                )
+                        st.warning(
+                            "⚠️ The model confidence is below "
+                            f"{CONFIDENCE_THRESHOLD * 100:.0f}%. "
+                            "Please treat this prediction as uncertain "
+                            "and verify the item manually."
+                        )
 
+                    else:
 
-                top_indices = np.argsort(
-                    predictions
-                )[::-1][:len(CLASS_NAMES)]
+                        st.success(
+                            "✅ The model has sufficient confidence "
+                            "for this demonstration."
+                        )
 
+                    # ====================================================
+                    # WASTE MANAGEMENT TIPS
+                    # ====================================================
 
-                for index in top_indices:
+                    st.markdown(
+                        """
+                        <div class="tip-card">
 
-                    class_name = CLASS_NAMES[
-                        index
-                    ]
+                            <div class="tip-title">
+                                💡 Waste Management Tips
+                            </div>
 
-                    score = float(
-                        predictions[index]
+                        """,
+                        unsafe_allow_html=True
                     )
 
-                    st.write(
-                        f"**{class_name}** — "
-                        f"{score * 100:.2f}%"
+                    for tip in info["tips"]:
+
+                        st.markdown(
+                            f"""
+                            <div class="tip-item">
+                                ✓ {tip}
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+
+                    st.markdown(
+                        "</div>",
+                        unsafe_allow_html=True
                     )
 
-                    st.progress(
-                        min(score, 1.0)
+                    # ====================================================
+                    # PREDICTION BREAKDOWN
+                    # ====================================================
+
+                    st.markdown(
+                        '<div class="section-heading">📊 Prediction Breakdown</div>',
+                        unsafe_allow_html=True
                     )
 
+                    st.markdown(
+                        """
+                        <div class="section-description">
+                            The chart below shows how strongly the model
+                            predicted each waste category.
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
 
-            except Exception as error:
+                    top_indices = np.argsort(
+                        predictions
+                    )[::-1]
 
-                st.error(
-                    "Unable to analyze the image."
-                )
+                    for index in top_indices:
 
-                st.exception(
-                    error
-                )
+                        if index >= len(class_names):
+                            continue
+
+                        class_name = class_names[index]
+
+                        score = float(
+                            predictions[index]
+                        )
+
+                        st.write(
+                            f"**{class_name}** — "
+                            f"{score * 100:.2f}%"
+                        )
+
+                        st.progress(
+                            min(score, 1.0)
+                        )
+
+                except FileNotFoundError as error:
+
+                    st.error(
+                        "❌ Model loading error."
+                    )
+
+                    st.code(
+                        str(error)
+                    )
+
+                    st.info(
+                        """
+                        Please check your project structure:
+
+                        WasteWise-AI/
+                        ├── app.py
+                        ├── requirements.txt
+                        ├── assets/
+                        │   ├── icodeguru_logo.png
+                        │   └── school_logo.png
+                        └── model/
+                            ├── wastewise_model.keras
+                            └── class_names.json
+                        """
+                    )
+
+                except Exception as error:
+
+                    st.error(
+                        "❌ An unexpected error occurred "
+                        "while analyzing the image."
+                    )
+
+                    st.code(
+                        str(error)
+                    )
+
+    except Exception as error:
+
+        st.error(
+            f"❌ Could not open the selected image: {error}"
+        )
+
+
+else:
+
+    st.info(
+        "📷 Upload an image or use the camera to start."
+    )
 
 
 # ============================================================
-# SUPPORTED CATEGORIES
+# SUPPORTED WASTE CATEGORIES
 # ============================================================
 
 st.markdown(
-    """
-    <div class="section-heading">
-        ♻️ Supported Waste Categories
-    </div>
+    '<div class="section-heading">♻️ Supported Waste Categories</div>',
+    unsafe_allow_html=True
+)
 
+st.markdown(
+    """
     <div class="section-description">
-
-        WasteWise AI currently recognizes four broad
-        waste categories from the training dataset.
-
+        WasteWise AI currently recognizes four major categories
+        from the trained dataset.
     </div>
     """,
     unsafe_allow_html=True
 )
 
 
-category_columns = st.columns(
-    len(CLASS_NAMES)
-)
+col1, col2 = st.columns(2)
 
 
-for column, class_name in zip(
-    category_columns,
-    CLASS_NAMES
-):
+with col1:
 
-    info = WASTE_INFO.get(
-        class_name,
+    st.markdown(
+        """
+        <div class="info-card">
 
-        {
-            "icon": "♻️",
+            <div class="info-icon">
+                ☣️
+            </div>
 
-            "category":
-                class_name,
+            <div class="info-title">
+                Hazardous
+            </div>
 
-            "message":
-                ""
-        }
+            <div class="info-text">
+                Materials that may require special handling
+                or disposal procedures.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.write("")
+
+
+    st.markdown(
+        """
+        <div class="info-card">
+
+            <div class="info-icon">
+                🌱
+            </div>
+
+            <div class="info-title">
+                Organic
+            </div>
+
+            <div class="info-text">
+                Biodegradable material such as food and
+                other organic waste.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
 
-    with column:
+with col2:
 
-        st.markdown(
-            f"""
-            <div class="info-card">
+    st.markdown(
+        """
+        <div class="info-card">
 
-                <div class="info-icon">
-                    {info["icon"]}
-                </div>
-
-                <div class="info-title">
-                    {class_name}
-                </div>
-
-                <div class="info-text">
-                    {info["category"]}
-                </div>
-
+            <div class="info-icon">
+                🚫
             </div>
-            """,
-            unsafe_allow_html=True
-        )
+
+            <div class="info-title">
+                Non-Recyclable
+            </div>
+
+            <div class="info-text">
+                Waste that may not be accepted by common
+                recycling systems.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.write("")
+
+
+    st.markdown(
+        """
+        <div class="info-card">
+
+            <div class="info-icon">
+                ♻️
+            </div>
+
+            <div class="info-title">
+                Recyclable
+            </div>
+
+            <div class="info-text">
+                Materials that may be recyclable depending
+                on local recycling facilities and rules.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 # ============================================================
-# HOW WASTEWISE AI WORKS
+# HOW IT WORKS
 # ============================================================
 
 st.markdown(
+    '<div class="section-heading">⚙️ How WasteWise AI Works</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
     """
-    <div class="section-heading">
-        📸 How WasteWise AI Works
+    <div class="section-description">
+        The complete workflow from image input to AI-powered
+        waste classification.
     </div>
     """,
     unsafe_allow_html=True
 )
 
 
-steps = [
+step1, step2, step3, step4 = st.columns(4)
 
-    (
-        "01",
-        "📤",
-        "Upload / Capture",
-        "Upload an image or capture one using your camera."
-    ),
 
-    (
-        "02",
-        "🖼️",
-        "Preprocess",
-        "The image is resized to 224 × 224 pixels."
-    ),
+with step1:
 
-    (
-        "03",
-        "🤖",
-        "AI Analysis",
-        "EfficientNetB0 analyzes visual features."
-    ),
+    st.markdown(
+        """
+        <div class="step-card">
 
-    (
-        "04",
-        "📊",
-        "Result",
-        "The model predicts the waste category."
+            <div class="step-number">
+                1
+            </div>
+
+            <div class="step-icon">
+                📷
+            </div>
+
+            <div class="step-title">
+                Capture
+            </div>
+
+            <div class="step-text">
+                Upload a waste image or capture one using
+                your device camera.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-]
 
+with step2:
 
-step_columns = st.columns(
-    4
-)
+    st.markdown(
+        """
+        <div class="step-card">
 
-
-for column, step in zip(
-    step_columns,
-    steps
-):
-
-    number, icon, title, description = step
-
-
-    with column:
-
-        st.markdown(
-            f"""
-            <div class="step-card">
-
-                <div class="step-number">
-                    {number}
-                </div>
-
-                <div class="step-icon">
-                    {icon}
-                </div>
-
-                <div class="step-title">
-                    {title}
-                </div>
-
-                <div class="step-text">
-                    {description}
-                </div>
-
+            <div class="step-number">
+                2
             </div>
-            """,
-            unsafe_allow_html=True
-        )
+
+            <div class="step-icon">
+                🧠
+            </div>
+
+            <div class="step-title">
+                AI Processing
+            </div>
+
+            <div class="step-text">
+                The trained EfficientNetB0 deep-learning
+                model processes the image.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with step3:
+
+    st.markdown(
+        """
+        <div class="step-card">
+
+            <div class="step-number">
+                3
+            </div>
+
+            <div class="step-icon">
+                🔍
+            </div>
+
+            <div class="step-title">
+                Classification
+            </div>
+
+            <div class="step-text">
+                The model predicts one of four waste
+                categories with a confidence score.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with step4:
+
+    st.markdown(
+        """
+        <div class="step-card">
+
+            <div class="step-number">
+                4
+            </div>
+
+            <div class="step-icon">
+                🌱
+            </div>
+
+            <div class="step-title">
+                Guidance
+            </div>
+
+            <div class="step-text">
+                WasteWise AI provides practical waste
+                management tips based on the prediction.
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 # ============================================================
@@ -2306,14 +1661,14 @@ st.markdown(
     """
     <div class="disclaimer">
 
-        <strong>⚠️ Important:</strong>
-
+        ⚠️ <strong>Important:</strong>
         WasteWise AI is an educational AI demonstration.
-        Image classification alone cannot determine the
-        exact material composition, contamination level,
-        microbiological safety, or official disposal method
-        of an item. Always follow local waste-management
-        guidance.
+        Its prediction should not be treated as a definitive
+        determination of material safety, recyclability,
+        contamination, or hazardousness.
+
+        Always follow official local waste-management,
+        recycling, and hazardous-material disposal guidelines.
 
     </div>
     """,
@@ -2326,7 +1681,7 @@ st.markdown(
 # ============================================================
 
 st.markdown(
-    """
+    f"""
     <div class="footer-box">
 
         <div class="footer-title">
@@ -2334,29 +1689,19 @@ st.markdown(
         </div>
 
         <div class="footer-subtitle">
-
-            AI-Powered Waste Classification &
-            Recycling Awareness Assistant
-
+            AI-Powered Waste Classification & Recycling Assistant
         </div>
 
         <div class="footer-partners">
-
-            <span>iCodeGuru</span>
-
-            <span>•</span>
-
-            <span>
-                🏫 School Science Exhibition
-            </span>
-
+            Built with Python • TensorFlow • Streamlit • EfficientNetB0
         </div>
 
         <div class="footer-small">
-
-            Built with Python • TensorFlow •
-            EfficientNetB0 • Streamlit
-
+            School Science Exhibition Project
+            <br>
+            In collaboration with iCodeGuru
+            <br><br>
+            © 2026 WasteWise AI
         </div>
 
     </div>
