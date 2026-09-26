@@ -1,4 +1,3 @@
-```python
 # ============================================================
 # WASTEWISE AI
 # AI-Powered Waste Classification & Recycling Assistant
