@@ -326,7 +326,7 @@ with logo_col3:
 
         st.image(
             str(SCHOOL_LOGO),
-            width=170
+            width=270
         )
 
     else:
