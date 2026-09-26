@@ -1301,7 +1301,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-streamlit run app.py
-```
 
-**Ek important point:** tumhari current model accuracy **74.14%** hai, isliye UI ko powerful banana possible hai, lekin UI accuracy ko artificially improve nahi karta. Ab app visually exhibition-ready ho jayegi; actual AI quality tumhare trained model ki performance par depend karegi.
