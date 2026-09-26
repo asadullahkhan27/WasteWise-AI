@@ -34,8 +34,6 @@ BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "model" / "wastewise_model.keras"
 CLASS_NAMES_PATH = BASE_DIR / "model" / "class_names.json"
 
-CSS_PATH = BASE_DIR / "style.css"
-
 ICODEGURU_LOGO = BASE_DIR / "assets" / "icodeguru_logo.png"
 SCHOOL_LOGO = BASE_DIR / "assets" / "school_logo.png"
 
@@ -45,43 +43,1052 @@ CONFIDENCE_THRESHOLD = 0.60
 
 
 # ============================================================
-# LOAD CSS FROM style.css
+# CUSTOM CSS
+# ALL CSS IS INSIDE app.py
 # ============================================================
 
-def load_css():
+CUSTOM_CSS = """
+<style>
 
-    if not CSS_PATH.exists():
+/* ========================================================
+   GLOBAL
+   ======================================================== */
 
-        st.warning(
-            "style.css not found. "
-            "Please make sure style.css is in the project root."
-        )
+html,
+body,
+[data-testid="stAppViewContainer"] {
 
-        return
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(34, 197, 94, 0.12),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at top right,
+            rgba(16, 185, 129, 0.10),
+            transparent 30%
+        ),
+        #06130e;
 
-    try:
+}
 
-        with open(
-            CSS_PATH,
-            "r",
-            encoding="utf-8"
-        ) as file:
+[data-testid="stAppViewContainer"] {
 
-            css = file.read()
+    color: #ecfdf5;
 
-        st.markdown(
-            f"<style>{css}</style>",
-            unsafe_allow_html=True
-        )
+}
 
-    except Exception as error:
+.main {
 
-        st.error(
-            f"Unable to load style.css: {error}"
-        )
+    background: transparent;
+
+}
 
 
-load_css()
+/* ========================================================
+   REMOVE DEFAULT TOP SPACE
+   ======================================================== */
+
+.block-container {
+
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+    max-width: 1400px;
+
+}
+
+
+/* ========================================================
+   SIDEBAR
+   ======================================================== */
+
+[data-testid="stSidebar"] {
+
+    background:
+        linear-gradient(
+            180deg,
+            #082219 0%,
+            #061811 100%
+        );
+
+    border-right:
+        1px solid
+        rgba(74, 222, 128, 0.15);
+
+}
+
+[data-testid="stSidebar"] * {
+
+    color: #ecfdf5;
+
+}
+
+
+/* ========================================================
+   BRAND HEADER
+   ======================================================== */
+
+.brand-left {
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 8px 0;
+
+}
+
+.brand-icon {
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #22c55e
+        );
+
+    box-shadow:
+        0 10px 35px
+        rgba(34, 197, 94, 0.25);
+
+    font-size: 30px;
+
+}
+
+.brand-name {
+
+    font-size: 27px;
+    font-weight: 800;
+
+    color: #f0fdf4;
+
+    letter-spacing: -0.5px;
+
+}
+
+.brand-subtitle {
+
+    margin-top: 3px;
+
+    font-size: 13px;
+
+    color: #86efac;
+
+}
+
+
+/* ========================================================
+   LOGOS
+   ======================================================== */
+
+.logo-box {
+
+    min-height: 72px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 8px;
+
+    border-radius: 16px;
+
+    background:
+        rgba(255, 255, 255, 0.045);
+
+    border:
+        1px solid
+        rgba(134, 239, 172, 0.12);
+
+    backdrop-filter: blur(10px);
+
+}
+
+
+/* ========================================================
+   HERO
+   ======================================================== */
+
+.hero-wrapper {
+
+    margin-top: 28px;
+    margin-bottom: 28px;
+
+    padding: 55px 30px;
+
+    border-radius: 30px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(20, 83, 45, 0.65),
+            rgba(6, 78, 59, 0.45)
+        );
+
+    border:
+        1px solid
+        rgba(74, 222, 128, 0.18);
+
+    box-shadow:
+        0 25px 80px
+        rgba(0, 0, 0, 0.25);
+
+}
+
+.hero-content {
+
+    max-width: 900px;
+
+    margin: auto;
+
+}
+
+.hero-badge {
+
+    display: inline-block;
+
+    padding: 9px 18px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(34, 197, 94, 0.12);
+
+    border:
+        1px solid
+        rgba(74, 222, 128, 0.25);
+
+    color: #bbf7d0;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    margin-bottom: 18px;
+
+}
+
+.hero-title {
+
+    margin: 0;
+
+    font-size: clamp(42px, 7vw, 72px);
+
+    font-weight: 900;
+
+    letter-spacing: -2px;
+
+    color: #f0fdf4;
+
+}
+
+.hero-title span {
+
+    color: #22c55e;
+
+}
+
+.hero-subtitle {
+
+    max-width: 780px;
+
+    margin: 20px auto 0;
+
+    color: #bbf7d0;
+
+    font-size: 17px;
+
+    line-height: 1.7;
+
+}
+
+.hero-tagline {
+
+    margin-top: 22px;
+
+    color: #4ade80;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+}
+
+
+/* ========================================================
+   STATISTICS
+   ======================================================== */
+
+.stats-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+
+    margin: 25px 0 45px;
+
+}
+
+.stat-card {
+
+    padding: 25px 18px;
+
+    text-align: center;
+
+    border-radius: 22px;
+
+    background:
+        rgba(255, 255, 255, 0.045);
+
+    border:
+        1px solid
+        rgba(134, 239, 172, 0.12);
+
+    box-shadow:
+        0 12px 35px
+        rgba(0, 0, 0, 0.18);
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease;
+
+}
+
+.stat-card:hover {
+
+    transform: translateY(-5px);
+
+    border-color:
+        rgba(74, 222, 128, 0.35);
+
+}
+
+.stat-icon {
+
+    font-size: 30px;
+
+    margin-bottom: 10px;
+
+}
+
+.stat-number {
+
+    font-size: 28px;
+
+    font-weight: 900;
+
+    color: #4ade80;
+
+}
+
+.stat-label {
+
+    margin-top: 5px;
+
+    color: #a7f3d0;
+
+    font-size: 13px;
+
+}
+
+
+/* ========================================================
+   SECTION HEADINGS
+   ======================================================== */
+
+.section-heading {
+
+    margin-top: 45px;
+
+    font-size: 30px;
+
+    font-weight: 850;
+
+    color: #f0fdf4;
+
+}
+
+.section-description {
+
+    margin-top: 8px;
+    margin-bottom: 22px;
+
+    color: #86efac;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+
+}
+
+
+/* ========================================================
+   FILE UPLOADER
+   ======================================================== */
+
+[data-testid="stFileUploader"] {
+
+    background:
+        rgba(255, 255, 255, 0.035);
+
+    border:
+        1px solid
+        rgba(74, 222, 128, 0.15);
+
+    border-radius: 20px;
+
+    padding: 12px;
+
+}
+
+[data-testid="stFileUploaderDropzone"] {
+
+    background:
+        rgba(6, 78, 59, 0.20);
+
+    border:
+        1px dashed
+        rgba(74, 222, 128, 0.35);
+
+    border-radius: 16px;
+
+}
+
+[data-testid="stFileUploaderDropzoneInstructions"] {
+
+    color: #bbf7d0;
+
+}
+
+
+/* ========================================================
+   BUTTON
+   ======================================================== */
+
+.stButton > button {
+
+    width: 100%;
+
+    min-height: 52px;
+
+    border: none;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #22c55e
+        );
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 12px 30px
+        rgba(34, 197, 94, 0.20);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+.stButton > button:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 16px 35px
+        rgba(34, 197, 94, 0.30);
+
+}
+
+
+/* ========================================================
+   TABS
+   ======================================================== */
+
+.stTabs [data-baseweb="tab-list"] {
+
+    gap: 10px;
+
+    background:
+        rgba(255, 255, 255, 0.025);
+
+    padding: 8px;
+
+    border-radius: 16px;
+
+}
+
+.stTabs [data-baseweb="tab"] {
+
+    height: 48px;
+
+    padding: 0 20px;
+
+    border-radius: 12px;
+
+    color: #a7f3d0;
+
+    font-weight: 700;
+
+}
+
+.stTabs [aria-selected="true"] {
+
+    background:
+        rgba(34, 197, 94, 0.15);
+
+    color: #4ade80;
+
+}
+
+
+/* ========================================================
+   CAMERA
+   ======================================================== */
+
+[data-testid="stCameraInput"] {
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+}
+
+
+/* ========================================================
+   PREVIEW CARD
+   ======================================================== */
+
+.preview-card {
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(255, 255, 255, 0.045);
+
+    border:
+        1px solid
+        rgba(134, 239, 172, 0.12);
+
+    min-height: 150px;
+
+}
+
+.preview-title {
+
+    font-size: 21px;
+
+    font-weight: 800;
+
+    color: #4ade80;
+
+    margin-bottom: 12px;
+
+}
+
+.preview-text {
+
+    color: #bbf7d0;
+
+    line-height: 1.7;
+
+}
+
+
+/* ========================================================
+   RESULT BOX
+   ======================================================== */
+
+.result-box {
+
+    margin-top: 30px;
+
+    padding: 35px;
+
+    text-align: center;
+
+    border-radius: 26px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(22, 101, 52, 0.50),
+            rgba(6, 78, 59, 0.45)
+        );
+
+    border:
+        1px solid
+        rgba(74, 222, 128, 0.30);
+
+    box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, 0.25);
+
+}
+
+.result-icon {
+
+    font-size: 60px;
+
+}
+
+.result-title {
+
+    margin-top: 8px;
+
+    font-size: 38px;
+
+    font-weight: 900;
+
+    color: #f0fdf4;
+
+}
+
+.confidence {
+
+    margin-top: 8px;
+
+    color: #4ade80;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+}
+
+.result-category {
+
+    margin-top: 10px;
+
+    color: #bbf7d0;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+}
+
+.result-message {
+
+    max-width: 750px;
+
+    margin: 18px auto 0;
+
+    color: #d1fae5;
+
+    line-height: 1.7;
+
+}
+
+
+/* ========================================================
+   TIP CARD
+   ======================================================== */
+
+.tip-card {
+
+    margin: 8px 0;
+
+    padding: 14px 18px;
+
+    border-radius: 13px;
+
+    background:
+        rgba(34, 197, 94, 0.07);
+
+    border-left:
+        4px solid
+        #22c55e;
+
+    color: #d1fae5;
+
+}
+
+
+/* ========================================================
+   CATEGORY CARDS
+   ======================================================== */
+
+.info-card {
+
+    height: 100%;
+
+    padding: 25px 18px;
+
+    text-align: center;
+
+    border-radius: 20px;
+
+    background:
+        rgba(255, 255, 255, 0.045);
+
+    border:
+        1px solid
+        rgba(134, 239, 172, 0.12);
+
+    transition:
+        transform 0.25s ease;
+
+}
+
+.info-card:hover {
+
+    transform: translateY(-5px);
+
+}
+
+.info-icon {
+
+    font-size: 40px;
+
+    margin-bottom: 12px;
+
+}
+
+.info-title {
+
+    font-size: 19px;
+
+    font-weight: 800;
+
+    color: #f0fdf4;
+
+}
+
+.info-text {
+
+    margin-top: 7px;
+
+    color: #86efac;
+
+    font-size: 13px;
+
+}
+
+
+/* ========================================================
+   HOW IT WORKS
+   ======================================================== */
+
+.step-card {
+
+    height: 100%;
+
+    padding: 25px 18px;
+
+    text-align: center;
+
+    border-radius: 20px;
+
+    background:
+        rgba(255, 255, 255, 0.04);
+
+    border:
+        1px solid
+        rgba(134, 239, 172, 0.11);
+
+}
+
+.step-number {
+
+    display: inline-flex;
+
+    width: 38px;
+    height: 38px;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(34, 197, 94, 0.14);
+
+    color: #4ade80;
+
+    font-size: 13px;
+
+    font-weight: 900;
+
+}
+
+.step-icon {
+
+    margin-top: 12px;
+
+    font-size: 35px;
+
+}
+
+.step-title {
+
+    margin-top: 10px;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    color: #f0fdf4;
+
+}
+
+.step-text {
+
+    margin-top: 8px;
+
+    color: #86efac;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+
+}
+
+
+/* ========================================================
+   DISCLAIMER
+   ======================================================== */
+
+.disclaimer {
+
+    margin-top: 45px;
+
+    padding: 20px 22px;
+
+    border-radius: 18px;
+
+    background:
+        rgba(234, 179, 8, 0.07);
+
+    border:
+        1px solid
+        rgba(250, 204, 21, 0.20);
+
+    color: #fef3c7;
+
+    line-height: 1.7;
+
+}
+
+
+/* ========================================================
+   FOOTER
+   ======================================================== */
+
+.footer-box {
+
+    margin-top: 45px;
+
+    padding: 35px 20px;
+
+    text-align: center;
+
+    border-top:
+        1px solid
+        rgba(134, 239, 172, 0.12);
+
+}
+
+.footer-title {
+
+    font-size: 25px;
+
+    font-weight: 900;
+
+    color: #4ade80;
+
+}
+
+.footer-subtitle {
+
+    margin-top: 8px;
+
+    color: #a7f3d0;
+
+}
+
+.footer-partners {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 18px;
+
+    color: #d1fae5;
+
+    font-weight: 700;
+
+}
+
+.footer-small {
+
+    margin-top: 12px;
+
+    color: #6ee7b7;
+
+    font-size: 12px;
+
+}
+
+
+/* ========================================================
+   ALERTS
+   ======================================================== */
+
+[data-testid="stAlert"] {
+
+    border-radius: 15px;
+
+}
+
+
+/* ========================================================
+   PROGRESS BAR
+   ======================================================== */
+
+[data-testid="stProgress"] > div > div {
+
+    background:
+        linear-gradient(
+            90deg,
+            #16a34a,
+            #4ade80
+        );
+
+}
+
+
+/* ========================================================
+   IMAGE
+   ======================================================== */
+
+[data-testid="stImage"] {
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+}
+
+
+/* ========================================================
+   RESPONSIVE DESIGN
+   ======================================================== */
+
+@media (max-width: 900px) {
+
+    .stats-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+    .hero-title {
+
+        font-size: 48px;
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .block-container {
+
+        padding-left: 1rem;
+        padding-right: 1rem;
+
+    }
+
+    .stats-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+    .hero-wrapper {
+
+        padding: 35px 18px;
+
+        border-radius: 22px;
+
+    }
+
+    .hero-title {
+
+        font-size: 40px;
+
+    }
+
+    .hero-subtitle {
+
+        font-size: 14px;
+
+    }
+
+    .brand-name {
+
+        font-size: 22px;
+
+    }
+
+    .brand-icon {
+
+        width: 48px;
+        height: 48px;
+
+        font-size: 25px;
+
+    }
+
+}
+
+</style>
+"""
+
+
+# ============================================================
+# APPLY CUSTOM CSS
+# ============================================================
+
+st.markdown(
+    CUSTOM_CSS,
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
@@ -91,6 +1098,7 @@ load_css()
 def image_to_base64(image_path):
 
     if not image_path.exists():
+
         return None
 
     try:
@@ -153,8 +1161,8 @@ WASTE_INFO = {
             "Follow local hazardous-waste disposal guidance."
 
         ]
-    },
 
+    },
 
     "Non-Recyclable": {
 
@@ -179,8 +1187,8 @@ WASTE_INFO = {
             "Reduce unnecessary single-use materials."
 
         ]
-    },
 
+    },
 
     "Organic": {
 
@@ -205,8 +1213,8 @@ WASTE_INFO = {
             "Follow local composting guidelines."
 
         ]
-    },
 
+    },
 
     "Recyclable": {
 
@@ -231,6 +1239,7 @@ WASTE_INFO = {
             "Check your local recycling guidelines."
 
         ]
+
     }
 
 }
@@ -244,10 +1253,12 @@ WASTE_INFO = {
 def load_class_names():
 
     default_classes = [
+
         "Hazardous",
         "Non-Recyclable",
         "Organic",
         "Recyclable"
+
     ]
 
     if not CLASS_NAMES_PATH.exists():
@@ -264,7 +1275,10 @@ def load_class_names():
 
             classes = json.load(file)
 
-        if not isinstance(classes, list):
+        if not isinstance(
+            classes,
+            list
+        ):
 
             return default_classes
 
@@ -321,6 +1335,10 @@ header_left, header_right = st.columns(
 )
 
 
+# ============================================================
+# LEFT BRAND
+# ============================================================
+
 with header_left:
 
     st.markdown(
@@ -349,6 +1367,10 @@ with header_left:
     )
 
 
+# ============================================================
+# RIGHT LOGOS
+# ============================================================
+
 with header_right:
 
     logo_left, logo_right = st.columns(
@@ -357,7 +1379,7 @@ with header_right:
     )
 
 
-    # iCodeGuru Logo
+    # iCodeGuru
     with logo_left:
 
         if icodeguru_logo:
@@ -396,7 +1418,7 @@ with header_right:
             )
 
 
-    # School Logo
+    # School
     with logo_right:
 
         if school_logo:
@@ -439,7 +1461,7 @@ st.divider()
 
 
 # ============================================================
-# HERO SECTION
+# HERO
 # ============================================================
 
 st.markdown(
@@ -501,7 +1523,6 @@ st.markdown(
 
         </div>
 
-
         <div class="stat-card">
 
             <div class="stat-icon">
@@ -518,7 +1539,6 @@ st.markdown(
 
         </div>
 
-
         <div class="stat-card">
 
             <div class="stat-icon">
@@ -534,7 +1554,6 @@ st.markdown(
             </div>
 
         </div>
-
 
         <div class="stat-card">
 
@@ -611,7 +1630,7 @@ with st.sidebar:
 
 
 # ============================================================
-# MODEL ERROR / DEBUG
+# MODEL ERROR
 # ============================================================
 
 if model is None:
@@ -633,7 +1652,6 @@ if model is None:
 WasteWise-AI/
 │
 ├── app.py
-├── style.css
 ├── requirements.txt
 │
 ├── assets/
@@ -693,7 +1711,7 @@ st.markdown(
 
 
 # ============================================================
-# IMAGE INPUT OPTIONS
+# IMAGE SOURCE
 # ============================================================
 
 st.markdown(
@@ -710,10 +1728,11 @@ upload_tab, camera_tab = st.tabs(
 
 
 uploaded_file = None
+camera_file = None
 
 
 # ============================================================
-# UPLOAD IMAGE
+# UPLOAD TAB
 # ============================================================
 
 with upload_tab:
@@ -752,7 +1771,7 @@ with upload_tab:
 
 
 # ============================================================
-# CAMERA INPUT
+# CAMERA TAB
 # ============================================================
 
 with camera_tab:
@@ -784,27 +1803,30 @@ with camera_tab:
 
 
 # ============================================================
-# SELECT IMAGE SOURCE
+# SELECT SOURCE
 # ============================================================
 
 if camera_file is not None:
 
     selected_file = camera_file
+
     selected_source = "Camera"
 
 elif uploaded_file is not None:
 
     selected_file = uploaded_file
+
     selected_source = "Uploaded Image"
 
 else:
 
     selected_file = None
+
     selected_source = None
 
 
 # ============================================================
-# IMAGE ANALYSIS
+# IMAGE PREVIEW
 # ============================================================
 
 if selected_file is not None:
@@ -825,13 +1847,10 @@ if selected_file is not None:
         st.stop()
 
 
-    # --------------------------------------------------------
-    # IMAGE PREVIEW
-    # --------------------------------------------------------
-
     st.markdown(
         "### 📸 Image Preview"
     )
+
 
     preview_left, preview_right = st.columns(
         [1, 1],
@@ -843,7 +1862,7 @@ if selected_file is not None:
 
         st.image(
             image,
-            caption=f"{selected_source}",
+            caption=selected_source,
             use_container_width=True
         )
 
@@ -860,7 +1879,8 @@ if selected_file is not None:
 
                 <div class="preview-text">
 
-                    Source: <strong>{selected_source}</strong>
+                    Source:
+                    <strong>{selected_source}</strong>
 
                     <br><br>
 
@@ -879,9 +1899,9 @@ if selected_file is not None:
         )
 
 
-    # --------------------------------------------------------
+    # ========================================================
     # ANALYZE BUTTON
-    # --------------------------------------------------------
+    # ========================================================
 
     analyze_button = st.button(
         "♻️ Analyze Waste",
@@ -889,6 +1909,10 @@ if selected_file is not None:
         key="analyze_waste"
     )
 
+
+    # ========================================================
+    # AI ANALYSIS
+    # ========================================================
 
     if analyze_button:
 
@@ -899,7 +1923,7 @@ if selected_file is not None:
             try:
 
                 # ------------------------------------------------
-                # RESIZE IMAGE
+                # RESIZE
                 # ------------------------------------------------
 
                 resized_image = image.resize(
@@ -908,7 +1932,7 @@ if selected_file is not None:
 
 
                 # ------------------------------------------------
-                # CONVERT IMAGE TO NUMPY
+                # NUMPY
                 # ------------------------------------------------
 
                 image_array = np.array(
@@ -919,7 +1943,7 @@ if selected_file is not None:
 
 
                 # ------------------------------------------------
-                # ADD BATCH DIMENSION
+                # BATCH DIMENSION
                 # ------------------------------------------------
 
                 image_array = np.expand_dims(
@@ -929,7 +1953,7 @@ if selected_file is not None:
 
 
                 # ------------------------------------------------
-                # MODEL PREDICTION
+                # PREDICTION
                 # ------------------------------------------------
 
                 predictions = model.predict(
@@ -939,7 +1963,7 @@ if selected_file is not None:
 
 
                 # ------------------------------------------------
-                # PREDICTED CLASS
+                # CLASS
                 # ------------------------------------------------
 
                 predicted_index = int(
@@ -947,7 +1971,9 @@ if selected_file is not None:
                 )
 
 
-                if predicted_index >= len(CLASS_NAMES):
+                if predicted_index >= len(
+                    CLASS_NAMES
+                ):
 
                     raise ValueError(
                         "Model output does not match "
@@ -966,7 +1992,7 @@ if selected_file is not None:
 
 
                 # ------------------------------------------------
-                # WASTE INFORMATION
+                # INFORMATION
                 # ------------------------------------------------
 
                 info = WASTE_INFO.get(
@@ -982,6 +2008,7 @@ if selected_file is not None:
                             "The AI classified this image.",
 
                         "tips": []
+
                     }
                 )
 
@@ -1028,7 +2055,7 @@ if selected_file is not None:
 
 
                 # ------------------------------------------------
-                # CONFIDENCE MESSAGE
+                # CONFIDENCE
                 # ------------------------------------------------
 
                 if confidence < CONFIDENCE_THRESHOLD:
@@ -1048,7 +2075,7 @@ if selected_file is not None:
 
 
                 # ------------------------------------------------
-                # WASTE MANAGEMENT TIPS
+                # TIPS
                 # ------------------------------------------------
 
                 st.markdown(
@@ -1069,7 +2096,7 @@ if selected_file is not None:
 
 
                 # ------------------------------------------------
-                # TOP PREDICTIONS
+                # PREDICTION BREAKDOWN
                 # ------------------------------------------------
 
                 st.markdown(
@@ -1150,9 +2177,11 @@ for column, class_name in zip(
         {
             "icon": "♻️",
 
-            "category": class_name,
+            "category":
+                class_name,
 
-            "message": ""
+            "message":
+                ""
         }
     )
 
