@@ -18,9 +18,9 @@ from PIL import Image
 # ============================================================
 
 st.set_page_config(
-    page_title="WasteWise AI",
+    page_title="WasteWise AI | AI Waste Classification",
     page_icon="♻️",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="expanded"
 )
 
@@ -43,6 +43,23 @@ CLASS_NAMES_PATH = (
     / "class_names.json"
 )
 
+CSS_PATH = (
+    BASE_DIR
+    / "style.css"
+)
+
+ICODEGURU_LOGO = (
+    BASE_DIR
+    / "assets"
+    / "icodeguru_logo.png"
+)
+
+SCHOOL_LOGO = (
+    BASE_DIR
+    / "assets"
+    / "school_logo.png"
+)
+
 
 # ============================================================
 # SETTINGS
@@ -51,6 +68,46 @@ CLASS_NAMES_PATH = (
 IMAGE_SIZE = (224, 224)
 
 CONFIDENCE_THRESHOLD = 0.60
+
+
+# ============================================================
+# LOAD CSS
+# ============================================================
+
+def load_css():
+
+    if not CSS_PATH.exists():
+
+        st.warning(
+            "style.css not found. "
+            "Please upload style.css to the project root."
+        )
+
+        return
+
+    try:
+
+        with open(
+            CSS_PATH,
+            "r",
+            encoding="utf-8"
+        ) as file:
+
+            css = file.read()
+
+        st.markdown(
+            f"<style>{css}</style>",
+            unsafe_allow_html=True
+        )
+
+    except Exception as error:
+
+        st.error(
+            f"CSS loading error: {error}"
+        )
+
+
+load_css()
 
 
 # ============================================================
@@ -63,7 +120,8 @@ WASTE_INFO = {
 
         "icon": "☣️",
 
-        "category": "Handle Carefully / Special Disposal",
+        "category":
+            "Handle Carefully / Special Disposal",
 
         "message":
             "Hazardous waste may require special handling. "
@@ -78,12 +136,12 @@ WASTE_INFO = {
         ]
     },
 
-
     "Non-Recyclable": {
 
         "icon": "🚫",
 
-        "category": "Non-Recyclable",
+        "category":
+            "Non-Recyclable",
 
         "message":
             "This item was classified as non-recyclable "
@@ -98,12 +156,12 @@ WASTE_INFO = {
         ]
     },
 
-
     "Organic": {
 
         "icon": "🌱",
 
-        "category": "Compostable / Organic",
+        "category":
+            "Compostable / Organic",
 
         "message":
             "Organic waste can potentially be composted "
@@ -118,12 +176,12 @@ WASTE_INFO = {
         ]
     },
 
-
     "Recyclable": {
 
         "icon": "♻️",
 
-        "category": "Recyclable",
+        "category":
+            "Recyclable",
 
         "message":
             "This item was classified as recyclable. "
@@ -141,99 +199,45 @@ WASTE_INFO = {
 
 
 # ============================================================
-# CUSTOM CSS
-# ============================================================
-
-st.markdown(
-    """
-    <style>
-
-    .main-title {
-        text-align: center;
-        font-size: 42px;
-        font-weight: 800;
-        margin-bottom: 5px;
-    }
-
-    .subtitle {
-        text-align: center;
-        font-size: 18px;
-        margin-bottom: 25px;
-    }
-
-    .result-box {
-        padding: 25px;
-        border-radius: 18px;
-        border: 1px solid rgba(128,128,128,0.25);
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-
-    .result-title {
-        font-size: 28px;
-        font-weight: 700;
-        text-align: center;
-    }
-
-    .confidence {
-        font-size: 22px;
-        font-weight: 600;
-        text-align: center;
-        margin-top: 10px;
-    }
-
-    .section-title {
-        font-size: 22px;
-        font-weight: 700;
-        margin-top: 25px;
-    }
-
-    .footer {
-        text-align: center;
-        margin-top: 40px;
-        padding: 20px;
-        opacity: 0.75;
-    }
-
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# ============================================================
 # LOAD CLASS NAMES
 # ============================================================
 
 @st.cache_data
 def load_class_names():
 
+    default_classes = [
+        "Hazardous",
+        "Non-Recyclable",
+        "Organic",
+        "Recyclable"
+    ]
+
     if not CLASS_NAMES_PATH.exists():
 
-        return [
-            "Hazardous",
-            "Non-Recyclable",
-            "Organic",
-            "Recyclable"
-        ]
+        return default_classes
 
     try:
 
         with open(
             CLASS_NAMES_PATH,
-            "r"
+            "r",
+            encoding="utf-8"
         ) as file:
 
-            return json.load(file)
+            classes = json.load(file)
+
+        if (
+            isinstance(classes, list)
+            and len(classes) > 0
+        ):
+
+            return classes
+
+        return default_classes
 
     except Exception:
 
-        return [
-            "Hazardous",
-            "Non-Recyclable",
-            "Organic",
-            "Recyclable"
-        ]
+        return default_classes
 
 
 CLASS_NAMES = load_class_names()
@@ -269,27 +273,187 @@ model = load_model()
 
 
 # ============================================================
-# HEADER
+# BRAND HEADER
+# ============================================================
+
+icodeguru_exists = ICODEGURU_LOGO.exists()
+school_exists = SCHOOL_LOGO.exists()
+
+
+logo_left = ""
+
+if icodeguru_exists:
+
+    logo_left = """
+        <img
+            src="data:image/png;base64,LOGO_PLACEHOLDER"
+            class="brand-logo"
+        >
+    """
+
+
+# ============================================================
+# HEADER BRANDING
 # ============================================================
 
 st.markdown(
-    '<div class="main-title">♻️ WasteWise AI</div>',
-    unsafe_allow_html=True
-)
-
-st.markdown(
     """
-    <div class="subtitle">
-    AI-Powered Waste Classification & Recycling Assistant
+    <div class="brand-bar">
+
+        <div class="brand-left">
+
+            <div>
+
+                <div class="brand-name">
+                    ♻️ WasteWise AI
+                </div>
+
+                <div class="brand-subtitle">
+                    AI-Powered Waste Classification
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="partner-logos">
+
+            <div class="brand-subtitle">
+                A Project by
+            </div>
+
+            <div class="brand-name">
+                iCodeGuru
+            </div>
+
+            <div class="brand-name">
+                🏫 School Science Exhibition
+            </div>
+
+        </div>
+
     </div>
     """,
     unsafe_allow_html=True
 )
 
 
-st.info(
-    "Upload a waste image and WasteWise AI will "
-    "classify it into one of four trained categories."
+# ============================================================
+# HERO
+# ============================================================
+
+st.markdown(
+    """
+    <div class="hero-wrapper">
+
+        <div class="hero-content">
+
+            <div class="hero-badge">
+                ♻️ AI • Computer Vision • Sustainability
+            </div>
+
+            <h1 class="hero-title">
+                WasteWise <span>AI</span>
+            </h1>
+
+            <div class="hero-subtitle">
+                An AI-powered waste classification and
+                recycling awareness assistant designed
+                to demonstrate how computer vision can
+                support smarter waste management.
+            </div>
+
+            <div class="hero-tagline">
+                🌱 Smarter Waste. Cleaner Future.
+            </div>
+
+        </div>
+
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# ============================================================
+# STATS
+# ============================================================
+
+st.markdown(
+    """
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🧠
+            </div>
+
+            <div class="stat-number">
+                AI
+            </div>
+
+            <div class="stat-label">
+                Computer Vision
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ♻️
+            </div>
+
+            <div class="stat-number">
+                4
+            </div>
+
+            <div class="stat-label">
+                Waste Categories
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                📐
+            </div>
+
+            <div class="stat-number">
+                224×224
+            </div>
+
+            <div class="stat-label">
+                Input Resolution
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🎯
+            </div>
+
+            <div class="stat-number">
+                74.14%
+            </div>
+
+            <div class="stat-label">
+                Validation Accuracy
+            </div>
+
+        </div>
+
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
 
@@ -299,22 +463,24 @@ st.info(
 
 with st.sidebar:
 
-    st.header("♻️ WasteWise AI")
+    st.header(
+        "♻️ WasteWise AI"
+    )
 
     st.markdown(
-        "### About the Project"
+        "### 🌱 About the Project"
     )
 
     st.write(
         """
-        WasteWise AI uses a trained EfficientNetB0
-        image-classification model to identify waste
-        categories from uploaded images.
+        WasteWise AI is an educational computer-vision
+        project that classifies uploaded waste images
+        into four trained categories.
         """
     )
 
     st.markdown(
-        "### Supported Classes"
+        "### 🗂️ Supported Classes"
     )
 
     for class_name in CLASS_NAMES:
@@ -333,20 +499,22 @@ with st.sidebar:
             f"{icon} {class_name}"
         )
 
-    st.markdown(
-        "---"
+    st.markdown("---")
+
+    st.caption(
+        "🧠 Model: EfficientNetB0"
     )
 
     st.caption(
-        "Model: EfficientNetB0"
+        "📐 Input: 224 × 224"
     )
 
     st.caption(
-        "Image Size: 224 × 224"
+        "♻️ Classes: 4"
     )
 
     st.caption(
-        "Classes: 4"
+        "🎓 Educational Exhibition Project"
     )
 
 
@@ -362,11 +530,10 @@ if model is None:
 
     st.markdown(
         """
-        Please make sure your project has:
+        Please make sure the following files exist
+        in your GitHub repository:
 
         `model/wastewise_model.keras`
-
-        and
 
         `model/class_names.json`
         """
@@ -376,16 +543,29 @@ if model is None:
 
 
 # ============================================================
-# IMAGE UPLOADER
+# UPLOAD SECTION
 # ============================================================
 
 st.markdown(
-    "### 📤 Upload Waste Image"
+    """
+    <div class="section-heading">
+        🔍 Analyze Your Waste
+    </div>
+
+    <div class="section-description">
+        Upload a clear image of a waste item and let
+        WasteWise AI analyze its visual characteristics.
+    </div>
+
+    <div class="upload-container">
+    """,
+    unsafe_allow_html=True
 )
+
 
 uploaded_file = st.file_uploader(
 
-    "Choose an image",
+    "Upload Waste Image",
 
     type=[
         "jpg",
@@ -394,7 +574,15 @@ uploaded_file = st.file_uploader(
         "webp"
     ],
 
+    label_visibility="collapsed",
+
     help="Upload a clear image of the waste item."
+)
+
+
+st.markdown(
+    "</div>",
+    unsafe_allow_html=True
 )
 
 
@@ -419,67 +607,68 @@ if uploaded_file is not None:
         st.stop()
 
 
-    # --------------------------------------------------------
-    # DISPLAY IMAGE
-    # --------------------------------------------------------
+    st.markdown(
+        """
+        <div class="section-heading">
+            🖼️ Image Preview
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 
     st.markdown(
-        "### 🖼️ Uploaded Image"
+        '<div class="preview-card">',
+        unsafe_allow_html=True
     )
 
     st.image(
         image,
         caption="Uploaded Waste Image",
-        width="stretch"
+        use_container_width=True
+    )
+
+    st.markdown(
+        "</div>",
+        unsafe_allow_html=True
     )
 
 
-    # --------------------------------------------------------
-    # PREDICTION BUTTON
-    # --------------------------------------------------------
+    # ========================================================
+    # ANALYZE
+    # ========================================================
 
     analyze_button = st.button(
-        "🔍 Analyze Waste",
+        "🔍 Analyze Waste with AI",
         type="primary",
-        width="stretch"
+        use_container_width=True
     )
 
 
     if analyze_button:
 
         with st.spinner(
-            "🤖 WasteWise AI is analyzing the image..."
+            "🤖 WasteWise AI is analyzing your image..."
         ):
 
-            # Resize image
             processed_image = image.resize(
                 IMAGE_SIZE
             )
 
-            # Convert to NumPy
             image_array = np.array(
                 processed_image
             ).astype("float32")
 
-            # Add batch dimension
             image_array = np.expand_dims(
                 image_array,
                 axis=0
             )
-
-            # ------------------------------------------------
-            # PREDICTION
-            # ------------------------------------------------
 
             predictions = model.predict(
                 image_array,
                 verbose=0
             )[0]
 
-
-            # ------------------------------------------------
-            # TOP PREDICTION
-            # ------------------------------------------------
 
             predicted_index = int(
                 np.argmax(predictions)
@@ -490,7 +679,9 @@ if uploaded_file is not None:
             ]
 
             confidence = float(
-                predictions[predicted_index]
+                predictions[
+                    predicted_index
+                ]
             )
 
 
@@ -510,15 +701,12 @@ if uploaded_file is not None:
         )
 
 
-        icon = info["icon"]
-
-        category = info["category"]
-
-
         st.markdown(
-            '<div class="section-title">'
-            '🤖 AI Prediction'
-            '</div>',
+            """
+            <div class="section-heading">
+                🤖 AI Prediction
+            </div>
+            """,
             unsafe_allow_html=True
         )
 
@@ -528,12 +716,11 @@ if uploaded_file is not None:
             <div class="result-box">
 
                 <div class="result-title">
-                    {icon} {predicted_class}
+                    {info["icon"]} {predicted_class}
                 </div>
 
                 <div class="confidence">
-                    Confidence:
-                    {confidence * 100:.2f}%
+                    Confidence: {confidence * 100:.2f}%
                 </div>
 
             </div>
@@ -543,7 +730,7 @@ if uploaded_file is not None:
 
 
         # ====================================================
-        # CONFIDENCE STATUS
+        # CONFIDENCE
         # ====================================================
 
         if confidence >= 0.80:
@@ -566,22 +753,8 @@ if uploaded_file is not None:
 
             st.warning(
                 "The AI is not sufficiently confident. "
-                "Try uploading a clearer image with the "
-                "waste item more visible."
+                "Try a clearer image with better lighting."
             )
-
-
-        # ====================================================
-        # CATEGORY
-        # ====================================================
-
-        st.markdown(
-            "### 🏷️ Waste Category"
-        )
-
-        st.write(
-            f"**{category}**"
-        )
 
 
         # ====================================================
@@ -589,11 +762,34 @@ if uploaded_file is not None:
         # ====================================================
 
         st.markdown(
-            "### 💡 Waste Management Guidance"
+            """
+            <div class="section-heading">
+                💡 Waste Management Guidance
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
-        st.info(
-            info["message"]
+
+        st.markdown(
+            f"""
+            <div class="info-card">
+
+                <div class="info-icon">
+                    {info["icon"]}
+                </div>
+
+                <div class="info-title">
+                    {info["category"]}
+                </div>
+
+                <div class="info-text">
+                    {info["message"]}
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
 
@@ -601,25 +797,48 @@ if uploaded_file is not None:
         # TIPS
         # ====================================================
 
-        if info["tips"]:
+        st.markdown(
+            """
+            <div class="section-heading">
+                ✅ Recommended Practices
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+        for tip in info["tips"]:
 
             st.markdown(
-                "### ✅ Recommended Practices"
+                f"""
+                <div class="info-card">
+
+                    <div class="info-text">
+                        ✓ {tip}
+                    </div>
+
+                </div>
+                """,
+                unsafe_allow_html=True
             )
-
-            for tip in info["tips"]:
-
-                st.write(
-                    f"• {tip}"
-                )
 
 
         # ====================================================
-        # TOP 3 PREDICTIONS
+        # TOP PREDICTIONS
         # ====================================================
 
         st.markdown(
-            "### 📊 Top Predictions"
+            """
+            <div class="section-heading">
+                📊 AI Prediction Breakdown
+            </div>
+
+            <div class="section-description">
+                Probability distribution across the four
+                supported waste categories.
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
 
@@ -641,12 +860,24 @@ if uploaded_file is not None:
                 predictions[index]
             )
 
-            st.write(
-                f"**{rank}. {class_name}**"
+            st.markdown(
+                f"""
+                <div class="info-card">
+
+                    <div class="info-title">
+                        #{rank} {class_name}
+                    </div>
+
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
             st.progress(
-                min(probability, 1.0)
+                min(
+                    probability,
+                    1.0
+                )
             )
 
             st.caption(
@@ -658,19 +889,18 @@ if uploaded_file is not None:
         # DISCLAIMER
         # ====================================================
 
-        st.markdown(
-            "---"
-        )
-
         st.warning(
             """
-            ⚠️ **Important:** WasteWise AI is an educational
-            machine-learning project. Its prediction should
-            not be treated as a definitive determination of
-            material composition, recyclability, hazardousness,
-            or microbiological safety. Always follow local
-            waste-management rules and use appropriate
-            professional guidance for hazardous materials.
+            ⚠️ **Educational Demonstration**
+
+            WasteWise AI provides an image-based model
+            prediction. It does not guarantee material
+            composition, recyclability, hazardousness,
+            toxicity, or microbiological safety.
+
+            Always follow local waste-management rules
+            and seek appropriate professional guidance
+            for hazardous materials.
             """
         )
 
@@ -682,18 +912,185 @@ else:
     # ========================================================
 
     st.markdown(
-        "### 📸 How to Use"
+        """
+        <div class="section-heading">
+            📸 How WasteWise AI Works
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-    st.write(
-        """
-        1. Upload a clear waste image.
-        2. Click **Analyze Waste**.
-        3. WasteWise AI predicts the waste category.
-        4. Review the confidence score.
-        5. Follow the displayed waste-management guidance.
-        """
-    )
+
+    col1, col2, col3, col4 = st.columns(4)
+
+
+    with col1:
+
+        st.markdown(
+            """
+            <div class="step-card">
+
+                <div class="step-number">
+                    1
+                </div>
+
+                <div class="step-icon">
+                    📸
+                </div>
+
+                <div class="step-title">
+                    Upload
+                </div>
+
+                <div class="step-text">
+                    Upload a clear image of a waste item.
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+    with col2:
+
+        st.markdown(
+            """
+            <div class="step-card">
+
+                <div class="step-number">
+                    2
+                </div>
+
+                <div class="step-icon">
+                    🖼️
+                </div>
+
+                <div class="step-title">
+                    Preprocess
+                </div>
+
+                <div class="step-text">
+                    The image is resized to 224 × 224
+                    pixels before inference.
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+    with col3:
+
+        st.markdown(
+            """
+            <div class="step-card">
+
+                <div class="step-number">
+                    3
+                </div>
+
+                <div class="step-icon">
+                    🧠
+                </div>
+
+                <div class="step-title">
+                    AI Analysis
+                </div>
+
+                <div class="step-text">
+                    EfficientNetB0 analyzes visual
+                    patterns learned during training.
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+    with col4:
+
+        st.markdown(
+            """
+            <div class="step-card">
+
+                <div class="step-number">
+                    4
+                </div>
+
+                <div class="step-icon">
+                    ♻️
+                </div>
+
+                <div class="step-title">
+                    Result
+                </div>
+
+                <div class="step-text">
+                    The app displays the predicted
+                    category and confidence.
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+# ============================================================
+# SUPPORTED CATEGORIES
+# ============================================================
+
+st.markdown(
+    """
+    <div class="section-heading">
+        ♻️ Supported Waste Categories
+    </div>
+
+    <div class="section-description">
+        WasteWise AI currently supports four trained classes.
+    </div>
+
+    <div class="stats-grid">
+
+        <div class="info-card">
+            <div class="info-icon">☣️</div>
+            <div class="info-title">Hazardous</div>
+            <div class="info-text">
+                Materials requiring special handling.
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon">🚫</div>
+            <div class="info-title">Non-Recyclable</div>
+            <div class="info-text">
+                Waste not classified as recyclable by the model.
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon">🌱</div>
+            <div class="info-title">Organic</div>
+            <div class="info-text">
+                Organic waste potentially suitable for composting.
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-icon">♻️</div>
+            <div class="info-title">Recyclable</div>
+            <div class="info-text">
+                Materials classified as potentially recyclable.
+            </div>
+        </div>
+
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
@@ -702,9 +1099,36 @@ else:
 
 st.markdown(
     """
-    <div class="footer">
-        ♻️ <b>WasteWise AI</b><br>
-        AI for Smarter Waste Classification & Awareness
+    <div class="footer-box">
+
+        <div class="footer-logo">
+            ♻️
+        </div>
+
+        <div class="footer-title">
+            WasteWise AI
+        </div>
+
+        <div class="footer-subtitle">
+            AI-Powered Waste Classification & Recycling Assistant
+        </div>
+
+        <div class="footer-subtitle">
+            Science Exhibition Project • iCodeGuru
+        </div>
+
+        <div class="footer-partners">
+
+            <div class="footer-partner">
+                iCodeGuru
+            </div>
+
+            <div class="footer-partner">
+                School Science Exhibition
+            </div>
+
+        </div>
+
     </div>
     """,
     unsafe_allow_html=True
