@@ -1140,6 +1140,7 @@
 # AI-Powered Waste Classification & Recycling Assistant
 # ============================================================
 
+import base64
 import json
 from pathlib import Path
 
@@ -1169,6 +1170,7 @@ BASE_DIR = Path(__file__).resolve().parent
 
 MODEL_PATH = BASE_DIR / "model" / "wastewise_model.keras"
 CLASS_NAMES_PATH = BASE_DIR / "model" / "class_names.json"
+
 CSS_PATH = BASE_DIR / "style.css"
 
 ICODEGURU_LOGO = BASE_DIR / "assets" / "icodeguru_logo.png"
@@ -1180,16 +1182,18 @@ CONFIDENCE_THRESHOLD = 0.60
 
 
 # ============================================================
-# CUSTOM CSS
+# LOAD CSS FROM style.css
 # ============================================================
 
 def load_css():
 
     if not CSS_PATH.exists():
+
         st.warning(
-            "style.css not found. Please make sure style.css "
-            "is in the project root."
+            "style.css not found. "
+            "Please make sure style.css is in the project root."
         )
+
         return
 
     try:
@@ -1209,12 +1213,52 @@ def load_css():
 
     except Exception as error:
 
-        st.warning(
-            f"Unable to load CSS: {error}"
+        st.error(
+            f"Unable to load style.css: {error}"
         )
 
 
 load_css()
+
+
+# ============================================================
+# IMAGE TO BASE64
+# ============================================================
+
+def image_to_base64(image_path):
+
+    if not image_path.exists():
+        return None
+
+    try:
+
+        with open(
+            image_path,
+            "rb"
+        ) as image_file:
+
+            encoded = base64.b64encode(
+                image_file.read()
+            ).decode("utf-8")
+
+        return encoded
+
+    except Exception:
+
+        return None
+
+
+# ============================================================
+# LOAD LOGOS
+# ============================================================
+
+icodeguru_logo = image_to_base64(
+    ICODEGURU_LOGO
+)
+
+school_logo = image_to_base64(
+    SCHOOL_LOGO
+)
 
 
 # ============================================================
@@ -1227,12 +1271,13 @@ WASTE_INFO = {
 
         "icon": "☣️",
 
-        "category": "Handle Carefully / Special Disposal",
+        "category":
+            "Handle Carefully / Special Disposal",
 
         "message":
             "This item has been classified as potentially "
             "hazardous. Avoid direct contact and keep it "
-            "separate from normal recyclable waste.",
+            "separate from ordinary recyclable waste.",
 
         "tips": [
 
@@ -1252,7 +1297,8 @@ WASTE_INFO = {
 
         "icon": "🚫",
 
-        "category": "Non-Recyclable",
+        "category":
+            "Non-Recyclable",
 
         "message":
             "This item has been classified as non-recyclable "
@@ -1277,7 +1323,8 @@ WASTE_INFO = {
 
         "icon": "🌱",
 
-        "category": "Compostable / Organic",
+        "category":
+            "Compostable / Organic",
 
         "message":
             "This item has been classified as organic waste. "
@@ -1302,7 +1349,8 @@ WASTE_INFO = {
 
         "icon": "♻️",
 
-        "category": "Recyclable",
+        "category":
+            "Recyclable",
 
         "message":
             "This item has been classified as recyclable. "
@@ -1340,6 +1388,7 @@ def load_class_names():
     ]
 
     if not CLASS_NAMES_PATH.exists():
+
         return default_classes
 
     try:
@@ -1351,6 +1400,10 @@ def load_class_names():
         ) as file:
 
             classes = json.load(file)
+
+        if not isinstance(classes, list):
+
+            return default_classes
 
         return classes
 
@@ -1370,7 +1423,11 @@ CLASS_NAMES = load_class_names()
 def load_model():
 
     if not MODEL_PATH.exists():
-        return None, f"Model file not found: {MODEL_PATH}"
+
+        return (
+            None,
+            f"Model file not found: {MODEL_PATH}"
+        )
 
     try:
 
@@ -1382,23 +1439,30 @@ def load_model():
 
     except Exception as error:
 
-        return None, str(error)
+        return (
+            None,
+            str(error)
+        )
 
 
 model, model_error = load_model()
 
 
 # ============================================================
-# HEADER
+# BRAND HEADER
 # ============================================================
 
-col1, col2 = st.columns(
-    [2.5, 1.5],
+header_left, header_right = st.columns(
+    [2.2, 1.8],
     vertical_alignment="center"
 )
 
 
-with col1:
+# ------------------------------------------------------------
+# LEFT BRAND
+# ------------------------------------------------------------
+
+with header_left:
 
     st.markdown(
         """
@@ -1426,46 +1490,90 @@ with col1:
     )
 
 
-with col2:
+# ------------------------------------------------------------
+# RIGHT LOGOS
+# ------------------------------------------------------------
 
-    logo_col1, logo_col2 = st.columns(2)
+with header_right:
 
-    with logo_col1:
+    logo_left, logo_right = st.columns(
+        2,
+        vertical_alignment="center"
+    )
 
-        if ICODEGURU_LOGO.exists():
 
-            st.image(
-                str(ICODEGURU_LOGO),
-                width=100
+    # iCodeGuru
+    with logo_left:
+
+        if icodeguru_logo:
+
+            st.markdown(
+                f"""
+                <div class="logo-box">
+
+                    <img
+                        src="data:image/png;base64,{icodeguru_logo}"
+                        style="
+                            width:100px;
+                            max-height:70px;
+                            object-fit:contain;
+                        "
+                    />
+
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
         else:
 
             st.markdown(
                 """
-                <div class="fallback-logo">
-                    iCodeGuru
+                <div class="logo-box">
+
+                    <div class="brand-name">
+                        iCodeGuru
+                    </div>
+
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
 
-    with logo_col2:
+    # School
+    with logo_right:
 
-        if SCHOOL_LOGO.exists():
+        if school_logo:
 
-            st.image(
-                str(SCHOOL_LOGO),
-                width=100
+            st.markdown(
+                f"""
+                <div class="logo-box">
+
+                    <img
+                        src="data:image/png;base64,{school_logo}"
+                        style="
+                            width:100px;
+                            max-height:70px;
+                            object-fit:contain;
+                        "
+                    />
+
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
         else:
 
             st.markdown(
                 """
-                <div class="fallback-logo">
-                    🏫 School
+                <div class="logo-box">
+
+                    <div class="brand-name">
+                        🏫 School
+                    </div>
+
                 </div>
                 """,
                 unsafe_allow_html=True
@@ -1523,27 +1631,70 @@ st.markdown(
     <div class="stats-grid">
 
         <div class="stat-card">
-            <div class="stat-icon">🤖</div>
-            <div class="stat-number">AI</div>
-            <div class="stat-label">Computer Vision</div>
+
+            <div class="stat-icon">
+                🤖
+            </div>
+
+            <div class="stat-number">
+                AI
+            </div>
+
+            <div class="stat-label">
+                Computer Vision
+            </div>
+
         </div>
 
-        <div class="stat-card">
-            <div class="stat-icon">♻️</div>
-            <div class="stat-number">4</div>
-            <div class="stat-label">Waste Categories</div>
-        </div>
 
         <div class="stat-card">
-            <div class="stat-icon">📷</div>
-            <div class="stat-number">224×224</div>
-            <div class="stat-label">Input Resolution</div>
+
+            <div class="stat-icon">
+                ♻️
+            </div>
+
+            <div class="stat-number">
+                4
+            </div>
+
+            <div class="stat-label">
+                Waste Categories
+            </div>
+
         </div>
 
+
         <div class="stat-card">
-            <div class="stat-icon">🎯</div>
-            <div class="stat-number">74.14%</div>
-            <div class="stat-label">Validation Accuracy</div>
+
+            <div class="stat-icon">
+                📷
+            </div>
+
+            <div class="stat-number">
+                224×224
+            </div>
+
+            <div class="stat-label">
+                Input Resolution
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                🎯
+            </div>
+
+            <div class="stat-number">
+                74.14%
+            </div>
+
+            <div class="stat-label">
+                Validation Accuracy
+            </div>
+
         </div>
 
     </div>
@@ -1567,7 +1718,7 @@ with st.sidebar:
         ### About
 
         WasteWise AI uses computer vision to classify
-        waste images into four categories.
+        waste images into four broad categories.
 
         ### Supported Categories
 
@@ -1605,7 +1756,7 @@ with st.sidebar:
 
 
 # ============================================================
-# MODEL ERROR
+# MODEL ERROR / DEBUG
 # ============================================================
 
 if model is None:
@@ -1643,7 +1794,7 @@ WasteWise-AI/
 
     if MODEL_PATH.parent.exists():
 
-        files = [
+        model_files = [
             file.name
             for file in MODEL_PATH.parent.iterdir()
         ]
@@ -1652,7 +1803,9 @@ WasteWise-AI/
             "Files currently inside model folder:"
         )
 
-        st.write(files)
+        st.write(
+            model_files
+        )
 
     else:
 
@@ -1706,20 +1859,37 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file is not None:
 
-    image = Image.open(
-        uploaded_file
-    ).convert("RGB")
+    try:
+
+        image = Image.open(
+            uploaded_file
+        ).convert("RGB")
+
+    except Exception:
+
+        st.error(
+            "Unable to open this image. "
+            "Please upload a valid JPG, PNG or WEBP file."
+        )
+
+        st.stop()
+
+
+    # --------------------------------------------------------
+    # IMAGE PREVIEW
+    # --------------------------------------------------------
 
     st.markdown(
         "### 📸 Uploaded Image"
     )
 
-    preview_col1, preview_col2 = st.columns(
-        [1, 1]
+    preview_left, preview_right = st.columns(
+        [1, 1],
+        vertical_alignment="center"
     )
 
 
-    with preview_col1:
+    with preview_left:
 
         st.image(
             image,
@@ -1728,7 +1898,7 @@ if uploaded_file is not None:
         )
 
 
-    with preview_col2:
+    with preview_right:
 
         st.markdown(
             """
@@ -1739,9 +1909,11 @@ if uploaded_file is not None:
                 </div>
 
                 <div class="preview-text">
+
                     Your image is ready for AI analysis.
                     Click the button below to classify
                     the waste category.
+
                 </div>
 
             </div>
@@ -1750,21 +1922,25 @@ if uploaded_file is not None:
         )
 
 
-    analyze = st.button(
+    # --------------------------------------------------------
+    # ANALYZE BUTTON
+    # --------------------------------------------------------
+
+    analyze_button = st.button(
         "♻️ Analyze Waste",
         use_container_width=True
     )
 
 
-    if analyze:
+    if analyze_button:
 
         with st.spinner(
-            "AI is analyzing the image..."
+            "🤖 AI is analyzing the image..."
         ):
 
             try:
 
-                # Resize image
+                # Resize
                 resized_image = image.resize(
                     IMAGE_SIZE
                 )
@@ -1782,14 +1958,20 @@ if uploaded_file is not None:
                     axis=0
                 )
 
-                # Prediction
+                # --------------------------------------------
+                # MODEL PREDICTION
+                # --------------------------------------------
+
                 predictions = model.predict(
                     image_array,
                     verbose=0
                 )[0]
 
 
-                # Get top prediction
+                # --------------------------------------------
+                # PREDICTED CLASS
+                # --------------------------------------------
+
                 predicted_index = int(
                     np.argmax(predictions)
                 )
@@ -1803,21 +1985,30 @@ if uploaded_file is not None:
                 )
 
 
-                # ====================================================
-                # RESULT
-                # ====================================================
+                # --------------------------------------------
+                # WASTE INFORMATION
+                # --------------------------------------------
 
                 info = WASTE_INFO.get(
                     predicted_class,
+
                     {
                         "icon": "♻️",
-                        "category": predicted_class,
+
+                        "category":
+                            predicted_class,
+
                         "message":
                             "The AI classified this image.",
+
                         "tips": []
                     }
                 )
 
+
+                # --------------------------------------------
+                # RESULT
+                # --------------------------------------------
 
                 st.markdown(
                     f"""
@@ -1832,16 +2023,22 @@ if uploaded_file is not None:
                         </div>
 
                         <div class="confidence">
+
                             Confidence:
                             {confidence * 100:.2f}%
+
                         </div>
 
                         <div class="result-category">
+
                             {info["category"]}
+
                         </div>
 
                         <div class="result-message">
+
                             {info["message"]}
+
                         </div>
 
                     </div>
@@ -1850,9 +2047,9 @@ if uploaded_file is not None:
                 )
 
 
-                # ====================================================
-                # CONFIDENCE WARNING
-                # ====================================================
+                # --------------------------------------------
+                # CONFIDENCE MESSAGE
+                # --------------------------------------------
 
                 if confidence < CONFIDENCE_THRESHOLD:
 
@@ -1866,13 +2063,13 @@ if uploaded_file is not None:
                 else:
 
                     st.success(
-                        "AI classification completed successfully."
+                        "✅ AI classification completed successfully."
                     )
 
 
-                # ====================================================
-                # DISPOSAL TIPS
-                # ====================================================
+                # --------------------------------------------
+                # WASTE MANAGEMENT TIPS
+                # --------------------------------------------
 
                 st.markdown(
                     "### 💡 Waste Management Tips"
@@ -1890,9 +2087,9 @@ if uploaded_file is not None:
                     )
 
 
-                # ====================================================
+                # --------------------------------------------
                 # TOP PREDICTIONS
-                # ====================================================
+                # --------------------------------------------
 
                 st.markdown(
                     "### 📊 AI Prediction Breakdown"
@@ -1945,15 +2142,19 @@ st.markdown(
     </div>
 
     <div class="section-description">
+
         WasteWise AI currently recognizes four broad
         waste categories from the training dataset.
+
     </div>
     """,
     unsafe_allow_html=True
 )
 
 
-category_columns = st.columns(4)
+category_columns = st.columns(
+    len(CLASS_NAMES)
+)
 
 
 for column, class_name in zip(
@@ -1963,9 +2164,12 @@ for column, class_name in zip(
 
     info = WASTE_INFO.get(
         class_name,
+
         {
             "icon": "♻️",
+
             "category": class_name,
+
             "message": ""
         }
     )
@@ -1996,7 +2200,7 @@ for column, class_name in zip(
 
 
 # ============================================================
-# HOW IT WORKS
+# HOW WASTEWISE AI WORKS
 # ============================================================
 
 st.markdown(
@@ -2042,7 +2246,9 @@ steps = [
 ]
 
 
-step_columns = st.columns(4)
+step_columns = st.columns(
+    4
+)
 
 
 for column, step in zip(
@@ -2051,6 +2257,7 @@ for column, step in zip(
 ):
 
     number, icon, title, description = step
+
 
     with column:
 
@@ -2116,19 +2323,29 @@ st.markdown(
         </div>
 
         <div class="footer-subtitle">
+
             AI-Powered Waste Classification &
             Recycling Awareness Assistant
+
         </div>
 
         <div class="footer-partners">
+
             <span>iCodeGuru</span>
+
             <span>•</span>
-            <span>🏫 School Science Exhibition</span>
+
+            <span>
+                🏫 School Science Exhibition
+            </span>
+
         </div>
 
         <div class="footer-small">
-            Built with Python • TensorFlow • EfficientNetB0 •
-            Streamlit
+
+            Built with Python • TensorFlow •
+            EfficientNetB0 • Streamlit
+
         </div>
 
     </div>
