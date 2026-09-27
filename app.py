@@ -174,7 +174,7 @@ st.markdown(
 
     .logo-box {
         width: 120px;
-        height: 120px;
+        height: 150px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -183,7 +183,7 @@ st.markdown(
 
     .logo-box img {
         width: 110px !important;
-        height: 110px !important;
+        height: 120px !important;
         object-fit: contain;
         border-radius: 50%;
     }
