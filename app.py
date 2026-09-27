@@ -692,20 +692,20 @@ if selected_file is not None:
                 st.stop()
 
 
-#         # ====================================================
-#         # GET WASTE INFORMATION
-#         # ====================================================
+        # ====================================================
+        # GET WASTE INFORMATION
+        # ====================================================
 
-#         info = WASTE_INFO.get(
-#             predicted_class,
-#             {
-#                 "icon": "♻️",
-#                 "category": predicted_class,
-#                 "message":
-#                     "No additional information available.",
-#                 "tips": []
-#             }
-#         )
+        info = WASTE_INFO.get(
+            predicted_class,
+            {
+                "icon": "♻️",
+                "category": predicted_class,
+                "message":
+                    "No additional information available.",
+                "tips": []
+            }
+        )
 
 
 #         icon = info["icon"]
