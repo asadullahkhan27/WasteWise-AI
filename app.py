@@ -1,695 +1,695 @@
-# # ============================================================
-# # WASTEWISE AI
-# # AI-Powered Waste Classification & Recycling Assistant
-# # ============================================================
+# ============================================================
+# WASTEWISE AI
+# AI-Powered Waste Classification & Recycling Assistant
+# ============================================================
 
-# import json
-# from pathlib import Path
+import json
+from pathlib import Path
 
-# import numpy as np
-# import streamlit as st
-# import tensorflow as tf
-# from PIL import Image
+import numpy as np
+import streamlit as st
+import tensorflow as tf
+from PIL import Image
 
 
-# # ============================================================
-# # PAGE CONFIGURATION
-# # ============================================================
+# ============================================================
+# PAGE CONFIGURATION
+# ============================================================
 
-# st.set_page_config(
-#     page_title="WasteWise AI",
-#     page_icon="♻️",
-#     layout="centered",
-#     initial_sidebar_state="expanded"
-# )
+st.set_page_config(
+    page_title="WasteWise AI",
+    page_icon="♻️",
+    layout="centered",
+    initial_sidebar_state="expanded"
+)
 
 
-# # ============================================================
-# # PROJECT PATHS
-# # ============================================================
+# ============================================================
+# PROJECT PATHS
+# ============================================================
 
-# BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent
 
-# MODEL_PATH = (
-#     BASE_DIR
-#     / "model"
-#     / "wastewise_model.keras"
-# )
+MODEL_PATH = (
+    BASE_DIR
+    / "model"
+    / "wastewise_model.keras"
+)
 
-# CLASS_NAMES_PATH = (
-#     BASE_DIR
-#     / "model"
-#     / "class_names.json"
-# )
+CLASS_NAMES_PATH = (
+    BASE_DIR
+    / "model"
+    / "class_names.json"
+)
 
-# ICODEGURU_LOGO = (
-#     BASE_DIR
-#     / "assets"
-#     / "icodeguru_logo.png"
-# )
+ICODEGURU_LOGO = (
+    BASE_DIR
+    / "assets"
+    / "icodeguru_logo.png"
+)
 
-# SCHOOL_LOGO = (
-#     BASE_DIR
-#     / "assets"
-#     / "school_logo.png"
-# )
+SCHOOL_LOGO = (
+    BASE_DIR
+    / "assets"
+    / "school_logo.png"
+)
 
 
-# # ============================================================
-# # MODEL SETTINGS
-# # ============================================================
+# ============================================================
+# MODEL SETTINGS
+# ============================================================
 
-# IMAGE_SIZE = (224, 224)
+IMAGE_SIZE = (224, 224)
 
-# CONFIDENCE_THRESHOLD = 0.60
+CONFIDENCE_THRESHOLD = 0.60
 
 
-# # ============================================================
-# # WASTE INFORMATION
-# # ============================================================
+# ============================================================
+# WASTE INFORMATION
+# ============================================================
 
-# WASTE_INFO = {
+WASTE_INFO = {
 
-#     "Hazardous": {
+    "Hazardous": {
 
-#         "icon": "☣️",
+        "icon": "☣️",
 
-#         "category":
-#             "Handle Carefully / Special Disposal",
+        "category":
+            "Handle Carefully / Special Disposal",
 
-#         "message":
-#             "Hazardous waste may require special handling. "
-#             "Do not mix potentially hazardous materials with "
-#             "ordinary household recycling.",
+        "message":
+            "Hazardous waste may require special handling. "
+            "Do not mix potentially hazardous materials with "
+            "ordinary household recycling.",
 
-#         "tips": [
-#             "Keep hazardous items separate.",
-#             "Avoid direct contact with unknown substances.",
-#             "Follow local hazardous-waste disposal guidance.",
-#             "Do not burn or improperly dump hazardous materials."
-#         ]
-#     },
+        "tips": [
+            "Keep hazardous items separate.",
+            "Avoid direct contact with unknown substances.",
+            "Follow local hazardous-waste disposal guidance.",
+            "Do not burn or improperly dump hazardous materials."
+        ]
+    },
 
-#     "Non-Recyclable": {
-
-#         "icon": "🚫",
+    "Non-Recyclable": {
+
+        "icon": "🚫",
 
-#         "category":
-#             "Non-Recyclable",
-
-#         "message":
-#             "This item was classified as non-recyclable "
-#             "by the AI model. Disposal options depend on "
-#             "local waste-management rules.",
-
-#         "tips": [
-#             "Keep it separate from recyclable materials.",
-#             "Check local waste-disposal guidelines.",
-#             "Avoid contaminating recyclable waste.",
-#             "Reduce single-use materials where possible."
-#         ]
-#     },
-
-#     "Organic": {
-
-#         "icon": "🌱",
-
-#         "category":
-#             "Compostable / Organic",
-
-#         "message":
-#             "Organic waste can potentially be composted "
-#             "when suitable facilities or composting systems "
-#             "are available.",
-
-#         "tips": [
-#             "Separate organic waste from recyclables.",
-#             "Use a suitable composting system where available.",
-#             "Keep compostable material free from contamination.",
-#             "Follow local composting guidelines."
-#         ]
-#     },
-
-#     "Recyclable": {
-
-#         "icon": "♻️",
-
-#         "category":
-#             "Recyclable",
-
-#         "message":
-#             "This item was classified as recyclable. "
-#             "Actual recyclability depends on your local "
-#             "recycling system and material requirements.",
-
-#         "tips": [
-#             "Keep recyclable materials clean and dry.",
-#             "Separate materials according to local rules.",
-#             "Avoid mixing contaminated waste with recyclables.",
-#             "Check your local recycling guidelines."
-#         ]
-#     }
-# }
-
-
-# # ============================================================
-# # SIMPLE CSS
-# # ============================================================
-
-# st.markdown(
-#     """
-#     <style>
-
-#     /* ======================================================
-#        TOP LOGO AREA
-#        ====================================================== */
-
-#     .top-logo-area {
-#         display: flex;
-#         justify-content: space-between;
-#         align-items: center;
-#         width: 100%;
-#         margin-bottom: 15px;
-#     }
-
-#     .logo-box {
-#         width: 120px;
-#         height: 120px;
-#         display: flex;
-#         align-items: center;
-#         justify-content: center;
-#         overflow: hidden;
-#     }
-
-#     .logo-box img {
-#         width: 110px !important;
-#         height: 110px !important;
-#         object-fit: contain;
-#         border-radius: 50%;
-#     }
-
-
-#     /* ======================================================
-#        MAIN TITLE
-#        ====================================================== */
-
-#     .main-title {
-#         text-align: center;
-#         font-size: 42px;
-#         font-weight: 800;
-#         margin-bottom: 5px;
-#     }
-
-
-#     /* ======================================================
-#        SUBTITLE
-#        ====================================================== */
-
-#     .subtitle {
-#         text-align: center;
-#         font-size: 18px;
-#         margin-bottom: 20px;
-#         opacity: 0.85;
-#     }
-
-
-#     /* ======================================================
-#        PREDICTION RESULT
-#        ====================================================== */
-
-#     .result-box {
-#         padding: 25px;
-#         border-radius: 18px;
-#         border: 1px solid rgba(128, 128, 128, 0.25);
-#         margin-top: 20px;
-#         margin-bottom: 20px;
-#     }
-
-#     .result-title {
-#         font-size: 28px;
-#         font-weight: 700;
-#         text-align: center;
-#     }
-
-#     .confidence {
-#         font-size: 22px;
-#         font-weight: 600;
-#         text-align: center;
-#         margin-top: 10px;
-#     }
-
-
-#     /* ======================================================
-#        SECTION TITLE
-#        ====================================================== */
+        "category":
+            "Non-Recyclable",
+
+        "message":
+            "This item was classified as non-recyclable "
+            "by the AI model. Disposal options depend on "
+            "local waste-management rules.",
+
+        "tips": [
+            "Keep it separate from recyclable materials.",
+            "Check local waste-disposal guidelines.",
+            "Avoid contaminating recyclable waste.",
+            "Reduce single-use materials where possible."
+        ]
+    },
+
+    "Organic": {
+
+        "icon": "🌱",
+
+        "category":
+            "Compostable / Organic",
+
+        "message":
+            "Organic waste can potentially be composted "
+            "when suitable facilities or composting systems "
+            "are available.",
+
+        "tips": [
+            "Separate organic waste from recyclables.",
+            "Use a suitable composting system where available.",
+            "Keep compostable material free from contamination.",
+            "Follow local composting guidelines."
+        ]
+    },
+
+    "Recyclable": {
+
+        "icon": "♻️",
+
+        "category":
+            "Recyclable",
+
+        "message":
+            "This item was classified as recyclable. "
+            "Actual recyclability depends on your local "
+            "recycling system and material requirements.",
+
+        "tips": [
+            "Keep recyclable materials clean and dry.",
+            "Separate materials according to local rules.",
+            "Avoid mixing contaminated waste with recyclables.",
+            "Check your local recycling guidelines."
+        ]
+    }
+}
+
+
+# ============================================================
+# SIMPLE CSS
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+
+    /* ======================================================
+       TOP LOGO AREA
+       ====================================================== */
+
+    .top-logo-area {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .logo-box {
+        width: 120px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .logo-box img {
+        width: 110px !important;
+        height: 110px !important;
+        object-fit: contain;
+        border-radius: 50%;
+    }
+
+
+    /* ======================================================
+       MAIN TITLE
+       ====================================================== */
+
+    .main-title {
+        text-align: center;
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+
+    /* ======================================================
+       SUBTITLE
+       ====================================================== */
+
+    .subtitle {
+        text-align: center;
+        font-size: 18px;
+        margin-bottom: 20px;
+        opacity: 0.85;
+    }
+
+
+    /* ======================================================
+       PREDICTION RESULT
+       ====================================================== */
+
+    .result-box {
+        padding: 25px;
+        border-radius: 18px;
+        border: 1px solid rgba(128, 128, 128, 0.25);
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .result-title {
+        font-size: 28px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .confidence {
+        font-size: 22px;
+        font-weight: 600;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+
+    /* ======================================================
+       SECTION TITLE
+       ====================================================== */
 
-#     .section-title {
-#         font-size: 22px;
-#         font-weight: 700;
-#         margin-top: 25px;
-#     }
+    .section-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-top: 25px;
+    }
 
 
-#     /* ======================================================
-#        FOOTER
-#        ====================================================== */
+    /* ======================================================
+       FOOTER
+       ====================================================== */
 
-#     .footer {
-#         text-align: center;
-#         margin-top: 40px;
-#         padding: 20px;
-#         opacity: 0.75;
-#     }
+    .footer {
+        text-align: center;
+        margin-top: 40px;
+        padding: 20px;
+        opacity: 0.75;
+    }
 
 
-#     /* ======================================================
-#        MOBILE
-#        ====================================================== */
+    /* ======================================================
+       MOBILE
+       ====================================================== */
 
-#     @media (max-width: 600px) {
+    @media (max-width: 600px) {
 
-#         .logo-box {
-#             width: 90px;
-#             height: 90px;
-#         }
+        .logo-box {
+            width: 90px;
+            height: 90px;
+        }
 
-#         .logo-box img {
-#             width: 80px !important;
-#             height: 80px !important;
-#         }
+        .logo-box img {
+            width: 80px !important;
+            height: 80px !important;
+        }
 
-#         .main-title {
-#             font-size: 32px;
-#         }
+        .main-title {
+            font-size: 32px;
+        }
 
-#         .subtitle {
-#             font-size: 16px;
-#         }
-#     }
+        .subtitle {
+            font-size: 16px;
+        }
+    }
 
-#     </style>
-#     """,
-#     unsafe_allow_html=True
-# )
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
-# # ============================================================
-# # LOAD CLASS NAMES
-# # ============================================================
+# ============================================================
+# LOAD CLASS NAMES
+# ============================================================
 
-# @st.cache_data
-# def load_class_names():
+@st.cache_data
+def load_class_names():
 
-#     if not CLASS_NAMES_PATH.exists():
+    if not CLASS_NAMES_PATH.exists():
 
-#         return [
-#             "Hazardous",
-#             "Non-Recyclable",
-#             "Organic",
-#             "Recyclable"
-#         ]
+        return [
+            "Hazardous",
+            "Non-Recyclable",
+            "Organic",
+            "Recyclable"
+        ]
 
-#     try:
+    try:
 
-#         with open(
-#             CLASS_NAMES_PATH,
-#             "r"
-#         ) as file:
+        with open(
+            CLASS_NAMES_PATH,
+            "r"
+        ) as file:
 
-#             return json.load(file)
+            return json.load(file)
 
-#     except Exception:
+    except Exception:
 
-#         return [
-#             "Hazardous",
-#             "Non-Recyclable",
-#             "Organic",
-#             "Recyclable"
-#         ]
+        return [
+            "Hazardous",
+            "Non-Recyclable",
+            "Organic",
+            "Recyclable"
+        ]
 
 
-# CLASS_NAMES = load_class_names()
+CLASS_NAMES = load_class_names()
 
 
-# # ============================================================
-# # LOAD MODEL
-# # ============================================================
+# ============================================================
+# LOAD MODEL
+# ============================================================
 
-# @st.cache_resource
-# def load_model():
+@st.cache_resource
+def load_model():
 
-#     if not MODEL_PATH.exists():
+    if not MODEL_PATH.exists():
 
-#         return None
+        return None
 
-#     try:
+    try:
 
-#         return tf.keras.models.load_model(
-#             MODEL_PATH
-#         )
+        return tf.keras.models.load_model(
+            MODEL_PATH
+        )
 
-#     except Exception as error:
+    except Exception as error:
 
-#         st.error(
-#             f"Unable to load model: {error}"
-#         )
+        st.error(
+            f"Unable to load model: {error}"
+        )
 
-#         return None
+        return None
 
 
-# model = load_model()
+model = load_model()
 
 
-# # ============================================================
-# # TOP LOGOS
-# # ============================================================
+# ============================================================
+# TOP LOGOS
+# ============================================================
 
-# left_col, center_col, right_col = st.columns(
-#     [1, 2, 1]
-# )
+left_col, center_col, right_col = st.columns(
+    [1, 2, 1]
+)
 
 
-# # ============================================================
-# # SCHOOL LOGO - LEFT
-# # ============================================================
+# ============================================================
+# SCHOOL LOGO - LEFT
+# ============================================================
 
-# with left_col:
+with left_col:
 
-#     if SCHOOL_LOGO.exists():
+    if SCHOOL_LOGO.exists():
 
-#         st.image(
-#             str(SCHOOL_LOGO),
-#             width=163
-#         )
+        st.image(
+            str(SCHOOL_LOGO),
+            width=163
+        )
 
-#     else:
+    else:
 
-#         st.caption(
-#             "School logo missing"
-#         )
+        st.caption(
+            "School logo missing"
+        )
 
 
-# # ============================================================
-# # CENTER
-# # ============================================================
+# ============================================================
+# CENTER
+# ============================================================
 
-# with center_col:
+with center_col:
 
-#     st.write("")
+    st.write("")
 
 
-# # ============================================================
-# # iCodeGuru LOGO - RIGHT
-# # ============================================================
+# ============================================================
+# iCodeGuru LOGO - RIGHT
+# ============================================================
 
-# with right_col:
+with right_col:
 
-#     if ICODEGURU_LOGO.exists():
+    if ICODEGURU_LOGO.exists():
 
-#         st.image(
-#             str(ICODEGURU_LOGO),
-#             width=163
-#         )
+        st.image(
+            str(ICODEGURU_LOGO),
+            width=163
+        )
 
-#     else:
+    else:
 
-#         st.caption(
-#             "iCodeGuru logo missing"
-#         )
+        st.caption(
+            "iCodeGuru logo missing"
+        )
 
 
-# # ============================================================
-# # MAIN HEADER
-# # ============================================================
+# ============================================================
+# MAIN HEADER
+# ============================================================
 
-# st.markdown(
-#     '<div class="main-title">♻️ WasteWise AI</div>',
-#     unsafe_allow_html=True
-# )
+st.markdown(
+    '<div class="main-title">♻️ WasteWise AI</div>',
+    unsafe_allow_html=True
+)
 
-# st.markdown(
-#     """
-#     <div class="subtitle">
-#         AI-Powered Waste Classification & Recycling Assistant
-#     </div>
-#     """,
-#     unsafe_allow_html=True
-# )
+st.markdown(
+    """
+    <div class="subtitle">
+        AI-Powered Waste Classification & Recycling Assistant
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 
-# st.info(
-#     "Upload a waste image or use your camera. "
-#     "WasteWise AI will classify it into one of four "
-#     "trained waste categories."
-# )
+st.info(
+    "Upload a waste image or use your camera. "
+    "WasteWise AI will classify it into one of four "
+    "trained waste categories."
+)
 
 
-# # ============================================================
-# # SIDEBAR
-# # ============================================================
+# ============================================================
+# SIDEBAR
+# ============================================================
 
-# with st.sidebar:
+with st.sidebar:
 
-#     st.header("♻️ WasteWise AI")
+    st.header("♻️ WasteWise AI")
 
-#     st.markdown("### About the Project")
+    st.markdown("### About the Project")
 
-#     st.write(
-#         """
-#         WasteWise AI uses a trained EfficientNetB0
-#         image-classification model to identify waste
-#         categories from images.
-#         """
-#     )
+    st.write(
+        """
+        WasteWise AI uses a trained EfficientNetB0
+        image-classification model to identify waste
+        categories from images.
+        """
+    )
 
-#     st.markdown("### Supported Classes")
+    st.markdown("### Supported Classes")
 
-#     for class_name in CLASS_NAMES:
+    for class_name in CLASS_NAMES:
 
-#         info = WASTE_INFO.get(
-#             class_name,
-#             {}
-#         )
+        info = WASTE_INFO.get(
+            class_name,
+            {}
+        )
 
-#         icon = info.get(
-#             "icon",
-#             "♻️"
-#         )
+        icon = info.get(
+            "icon",
+            "♻️"
+        )
 
-#         st.write(
-#             f"{icon} {class_name}"
-#         )
+        st.write(
+            f"{icon} {class_name}"
+        )
 
-#     st.markdown("---")
+    st.markdown("---")
 
-#     st.caption(
-#         "Model: EfficientNetB0"
-#     )
+    st.caption(
+        "Model: EfficientNetB0"
+    )
 
-#     st.caption(
-#         "Image Size: 224 × 224"
-#     )
+    st.caption(
+        "Image Size: 224 × 224"
+    )
 
-#     st.caption(
-#         "Classes: 4"
-#     )
+    st.caption(
+        "Classes: 4"
+    )
 
 
-# # ============================================================
-# # MODEL CHECK
-# # ============================================================
+# ============================================================
+# MODEL CHECK
+# ============================================================
 
-# if model is None:
+if model is None:
 
-#     st.error(
-#         "⚠️ Trained model not found."
-#     )
+    st.error(
+        "⚠️ Trained model not found."
+    )
 
-#     st.markdown(
-#         """
-#         Please make sure your project has:
+    st.markdown(
+        """
+        Please make sure your project has:
 
-#         `model/wastewise_model.keras`
+        `model/wastewise_model.keras`
 
-#         and
+        and
 
-#         `model/class_names.json`
-#         """
-#     )
+        `model/class_names.json`
+        """
+    )
 
-#     st.stop()
+    st.stop()
 
 
-# # ============================================================
-# # IMAGE INPUT
-# # ============================================================
+# ============================================================
+# IMAGE INPUT
+# ============================================================
 
-# st.markdown(
-#     "### 📤 Select Waste Image"
-# )
+st.markdown(
+    "### 📤 Select Waste Image"
+)
 
 
-# upload_tab, camera_tab = st.tabs(
-#     [
-#         "📁 Upload Image",
-#         "📷 Use Camera"
-#     ]
-# )
+upload_tab, camera_tab = st.tabs(
+    [
+        "📁 Upload Image",
+        "📷 Use Camera"
+    ]
+)
 
 
-# uploaded_file = None
-# camera_file = None
+uploaded_file = None
+camera_file = None
 
 
-# # ============================================================
-# # UPLOAD IMAGE
-# # ============================================================
+# ============================================================
+# UPLOAD IMAGE
+# ============================================================
 
-# with upload_tab:
+with upload_tab:
 
-#     uploaded_file = st.file_uploader(
-#         "Choose an image",
-#         type=[
-#             "jpg",
-#             "jpeg",
-#             "png",
-#             "webp"
-#         ],
-#         help="Upload a clear image of the waste item.",
-#         key="waste_upload"
-#     )
+    uploaded_file = st.file_uploader(
+        "Choose an image",
+        type=[
+            "jpg",
+            "jpeg",
+            "png",
+            "webp"
+        ],
+        help="Upload a clear image of the waste item.",
+        key="waste_upload"
+    )
 
 
-# # ============================================================
-# # CAMERA
-# # ============================================================
+# ============================================================
+# CAMERA
+# ============================================================
 
-# with camera_tab:
+with camera_tab:
 
-#     camera_file = st.camera_input(
-#         "Take a picture of the waste item",
-#         key="waste_camera"
-#     )
+    camera_file = st.camera_input(
+        "Take a picture of the waste item",
+        key="waste_camera"
+    )
 
 
-# # ============================================================
-# # SELECT IMAGE
-# # ============================================================
+# ============================================================
+# SELECT IMAGE
+# ============================================================
 
-# if camera_file is not None:
+if camera_file is not None:
 
-#     selected_file = camera_file
+    selected_file = camera_file
 
-# elif uploaded_file is not None:
+elif uploaded_file is not None:
 
-#     selected_file = uploaded_file
+    selected_file = uploaded_file
 
-# else:
+else:
 
-#     selected_file = None
+    selected_file = None
 
 
-# # ============================================================
-# # IMAGE PROCESSING
-# # ============================================================
+# ============================================================
+# IMAGE PROCESSING
+# ============================================================
 
-# if selected_file is not None:
+if selected_file is not None:
 
-#     try:
+    try:
 
-#         image = Image.open(
-#             selected_file
-#         ).convert("RGB")
+        image = Image.open(
+            selected_file
+        ).convert("RGB")
 
-#     except Exception as error:
+    except Exception as error:
 
-#         st.error(
-#             f"Could not open image: {error}"
-#         )
+        st.error(
+            f"Could not open image: {error}"
+        )
 
-#         st.stop()
+        st.stop()
 
 
-#     # ========================================================
-#     # DISPLAY IMAGE
-#     # ========================================================
+    # ========================================================
+    # DISPLAY IMAGE
+    # ========================================================
 
-#     st.markdown(
-#         "### 🖼️ Selected Waste Image"
-#     )
+    st.markdown(
+        "### 🖼️ Selected Waste Image"
+    )
 
-#     st.image(
-#         image,
-#         caption="Waste Image",
-#         width="stretch"
-#     )
+    st.image(
+        image,
+        caption="Waste Image",
+        width="stretch"
+    )
 
 
-#     # ========================================================
-#     # ANALYZE BUTTON
-#     # ========================================================
+    # ========================================================
+    # ANALYZE BUTTON
+    # ========================================================
 
-#     analyze_button = st.button(
-#         "🔍 Analyze Waste",
-#         type="primary",
-#         width="stretch"
-#     )
+    analyze_button = st.button(
+        "🔍 Analyze Waste",
+        type="primary",
+        width="stretch"
+    )
 
 
-#     # ========================================================
-#     # PREDICTION
-#     # ========================================================
+    # ========================================================
+    # PREDICTION
+    # ========================================================
 
-#     if analyze_button:
+    if analyze_button:
 
-#         with st.spinner(
-#             "🤖 WasteWise AI is analyzing the image..."
-#         ):
+        with st.spinner(
+            "🤖 WasteWise AI is analyzing the image..."
+        ):
 
-#             try:
+            try:
 
-#                 # Resize image
-#                 processed_image = image.resize(
-#                     IMAGE_SIZE
-#                 )
+                # Resize image
+                processed_image = image.resize(
+                    IMAGE_SIZE
+                )
 
-#                 # Convert image to NumPy
-#                 image_array = np.array(
-#                     processed_image
-#                 ).astype("float32")
+                # Convert image to NumPy
+                image_array = np.array(
+                    processed_image
+                ).astype("float32")
 
-#                 # Add batch dimension
-#                 image_array = np.expand_dims(
-#                     image_array,
-#                     axis=0
-#                 )
+                # Add batch dimension
+                image_array = np.expand_dims(
+                    image_array,
+                    axis=0
+                )
 
-#                 # Model prediction
-#                 predictions = model.predict(
-#                     image_array,
-#                     verbose=0
-#                 )[0]
+                # Model prediction
+                predictions = model.predict(
+                    image_array,
+                    verbose=0
+                )[0]
 
-#                 # Find highest prediction
-#                 predicted_index = int(
-#                     np.argmax(predictions)
-#                 )
+                # Find highest prediction
+                predicted_index = int(
+                    np.argmax(predictions)
+                )
 
-#                 predicted_class = (
-#                     CLASS_NAMES[predicted_index]
-#                 )
+                predicted_class = (
+                    CLASS_NAMES[predicted_index]
+                )
 
-#                 confidence = float(
-#                     predictions[predicted_index]
-#                 )
+                confidence = float(
+                    predictions[predicted_index]
+                )
 
-#             except Exception as error:
+            except Exception as error:
 
-#                 st.error(
-#                     f"Prediction failed: {error}"
-#                 )
+                st.error(
+                    f"Prediction failed: {error}"
+                )
 
-#                 st.stop()
+                st.stop()
 
 
 #         # ====================================================
