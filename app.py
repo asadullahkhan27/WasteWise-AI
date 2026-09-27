@@ -12,84 +12,198 @@ import tensorflow as tf
 from PIL import Image
 
 
-# =========================================================
-# PAGE CONFIG
-# =========================================================
+# ============================================================
+# PAGE CONFIGURATION
+# ============================================================
 
 st.set_page_config(
     page_title="WasteWise AI",
     page_icon="♻️",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="expanded"
 )
 
 
-# =========================================================
-# PATHS
-# =========================================================
+# ============================================================
+# PROJECT PATHS
+# ============================================================
 
 BASE_DIR = Path(__file__).resolve().parent
 
-MODEL_PATH = BASE_DIR / "model" / "wastewise_model.keras"
-CLASS_NAMES_PATH = BASE_DIR / "model" / "class_names.json"
+MODEL_PATH = (
+    BASE_DIR
+    / "model"
+    / "wastewise_model.keras"
+)
 
-ICODEGURU_LOGO = BASE_DIR / "assets" / "icodeguru_logo.png"
-SCHOOL_LOGO = BASE_DIR / "assets" / "school_logo.png"
+CLASS_NAMES_PATH = (
+    BASE_DIR
+    / "model"
+    / "class_names.json"
+)
+
+ICODEGURU_LOGO = (
+    BASE_DIR
+    / "assets"
+    / "icodeguru_logo.png"
+)
+
+SCHOOL_LOGO = (
+    BASE_DIR
+    / "assets"
+    / "school_logo.png"
+)
 
 
-# =========================================================
+# ============================================================
 # MODEL SETTINGS
-# =========================================================
+# ============================================================
 
 IMAGE_SIZE = (224, 224)
+
 CONFIDENCE_THRESHOLD = 0.60
 
 
-# =========================================================
+# ============================================================
 # WASTE INFORMATION
-# =========================================================
+# ============================================================
 
 WASTE_INFO = {
+
     "Hazardous": {
-        "icon": "☢️",
-        "description": "Waste that may be harmful to people or the environment.",
-        "guidance": "Handle carefully and dispose of it through an appropriate hazardous-waste facility."
+
+        "icon": "☣️",
+
+        "category":
+            "Handle Carefully / Special Disposal",
+
+        "message":
+            "Hazardous waste may require special handling. "
+            "Do not mix potentially hazardous materials with "
+            "ordinary household recycling.",
+
+        "tips": [
+            "Keep hazardous items separate.",
+            "Avoid direct contact with unknown substances.",
+            "Follow local hazardous-waste disposal guidance.",
+            "Do not burn or improperly dump hazardous materials."
+        ]
     },
 
     "Non-Recyclable": {
-        "icon": "🗑️",
-        "description": "Waste that is generally difficult or unsuitable to recycle.",
-        "guidance": "Place it in the appropriate general-waste bin according to local waste-management rules."
+
+        "icon": "🚫",
+
+        "category":
+            "Non-Recyclable",
+
+        "message":
+            "This item was classified as non-recyclable "
+            "by the AI model. Disposal options depend on "
+            "local waste-management rules.",
+
+        "tips": [
+            "Keep it separate from recyclable materials.",
+            "Check local waste-disposal guidelines.",
+            "Avoid contaminating recyclable waste.",
+            "Reduce single-use materials where possible."
+        ]
     },
 
     "Organic": {
+
         "icon": "🌱",
-        "description": "Biodegradable waste such as food and other natural materials.",
-        "guidance": "Consider composting or placing it in an organic-waste collection system."
+
+        "category":
+            "Compostable / Organic",
+
+        "message":
+            "Organic waste can potentially be composted "
+            "when suitable facilities or composting systems "
+            "are available.",
+
+        "tips": [
+            "Separate organic waste from recyclables.",
+            "Use a suitable composting system where available.",
+            "Keep compostable material free from contamination.",
+            "Follow local composting guidelines."
+        ]
     },
 
     "Recyclable": {
+
         "icon": "♻️",
-        "description": "Material that may be suitable for recycling.",
-        "guidance": "Keep it clean and dry and place it in the appropriate recycling collection."
+
+        "category":
+            "Recyclable",
+
+        "message":
+            "This item was classified as recyclable. "
+            "Actual recyclability depends on your local "
+            "recycling system and material requirements.",
+
+        "tips": [
+            "Keep recyclable materials clean and dry.",
+            "Separate materials according to local rules.",
+            "Avoid mixing contaminated waste with recyclables.",
+            "Check your local recycling guidelines."
+        ]
     }
 }
 
 
-# =========================================================
+# ============================================================
 # SIMPLE CSS
-# =========================================================
+# ============================================================
 
 st.markdown(
     """
     <style>
 
+    /* ======================================================
+       TOP LOGO AREA
+       ====================================================== */
+
+    .top-logo-area {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .logo-box {
+        width: 120px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .logo-box img {
+        width: 110px !important;
+        height: 110px !important;
+        object-fit: contain;
+        border-radius: 50%;
+    }
+
+
+    /* ======================================================
+       MAIN TITLE
+       ====================================================== */
+
     .main-title {
         text-align: center;
         font-size: 42px;
         font-weight: 800;
-        margin-top: 5px;
         margin-bottom: 5px;
     }
+
+
+    /* ======================================================
+       SUBTITLE
+       ====================================================== */
 
     .subtitle {
         text-align: center;
@@ -97,6 +211,11 @@ st.markdown(
         margin-bottom: 20px;
         opacity: 0.85;
     }
+
+
+    /* ======================================================
+       PREDICTION RESULT
+       ====================================================== */
 
     .result-box {
         padding: 25px;
@@ -119,12 +238,21 @@ st.markdown(
         margin-top: 10px;
     }
 
+
+    /* ======================================================
+       SECTION TITLE
+       ====================================================== */
+
     .section-title {
         font-size: 22px;
         font-weight: 700;
         margin-top: 25px;
-        margin-bottom: 10px;
     }
+
+
+    /* ======================================================
+       FOOTER
+       ====================================================== */
 
     .footer {
         text-align: center;
@@ -133,122 +261,166 @@ st.markdown(
         opacity: 0.75;
     }
 
+
+    /* ======================================================
+       MOBILE
+       ====================================================== */
+
+    @media (max-width: 600px) {
+
+        .logo-box {
+            width: 90px;
+            height: 90px;
+        }
+
+        .logo-box img {
+            width: 80px !important;
+            height: 80px !important;
+        }
+
+        .main-title {
+            font-size: 32px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+        }
+    }
+
     </style>
     """,
     unsafe_allow_html=True
 )
 
 
-# =========================================================
+# ============================================================
 # LOAD CLASS NAMES
-# =========================================================
+# ============================================================
 
 @st.cache_data
 def load_class_names():
 
-    if CLASS_NAMES_PATH.exists():
+    if not CLASS_NAMES_PATH.exists():
 
-        with open(CLASS_NAMES_PATH, "r", encoding="utf-8") as file:
+        return [
+            "Hazardous",
+            "Non-Recyclable",
+            "Organic",
+            "Recyclable"
+        ]
+
+    try:
+
+        with open(
+            CLASS_NAMES_PATH,
+            "r"
+        ) as file:
+
             return json.load(file)
 
-    return [
-        "Hazardous",
-        "Non-Recyclable",
-        "Organic",
-        "Recyclable"
-    ]
+    except Exception:
+
+        return [
+            "Hazardous",
+            "Non-Recyclable",
+            "Organic",
+            "Recyclable"
+        ]
 
 
 CLASS_NAMES = load_class_names()
 
 
-# =========================================================
+# ============================================================
 # LOAD MODEL
-# =========================================================
+# ============================================================
 
 @st.cache_resource
 def load_model():
 
     if not MODEL_PATH.exists():
+
         return None
 
-    return tf.keras.models.load_model(MODEL_PATH)
+    try:
+
+        return tf.keras.models.load_model(
+            MODEL_PATH
+        )
+
+    except Exception as error:
+
+        st.error(
+            f"Unable to load model: {error}"
+        )
+
+        return None
 
 
 model = load_model()
 
 
-# =========================================================
-# LOGOS
-# =========================================================
+# ============================================================
+# TOP LOGOS
+# ============================================================
 
-left_col, center_col, right_col = st.columns([1, 2, 1])
+left_col, center_col, right_col = st.columns(
+    [1, 2, 1]
+)
 
 
-# ---------------------------------------------------------
+# ============================================================
 # SCHOOL LOGO - LEFT
-# ---------------------------------------------------------
+# ============================================================
 
 with left_col:
 
     if SCHOOL_LOGO.exists():
 
-        school_logo = Image.open(SCHOOL_LOGO).convert("RGBA")
-
-        # Exact size: 152 x 152
-        school_logo = school_logo.resize(
-            (152, 152),
-            Image.Resampling.LANCZOS
-        )
-
         st.image(
-            school_logo,
-            width=152
+            str(SCHOOL_LOGO),
+            width=163
         )
 
     else:
 
-        st.caption("School logo missing")
+        st.caption(
+            "School logo missing"
+        )
 
 
-# ---------------------------------------------------------
-# CENTER SPACE
-# ---------------------------------------------------------
+# ============================================================
+# CENTER
+# ============================================================
 
 with center_col:
 
     st.write("")
 
 
-# ---------------------------------------------------------
-# ICODEGURU LOGO - RIGHT
-# ---------------------------------------------------------
+# ============================================================
+# iCodeGuru LOGO - RIGHT
+# ============================================================
 
 with right_col:
 
     if ICODEGURU_LOGO.exists():
 
-        icodeguru_logo = Image.open(ICODEGURU_LOGO).convert("RGBA")
-
-        # Exact size: 152 x 152
-        icodeguru_logo = icodeguru_logo.resize(
-            (152, 152),
-            Image.Resampling.LANCZOS
-        )
-
         st.image(
-            icodeguru_logo,
-            width=152
+            str(ICODEGURU_LOGO),
+            width=163
         )
 
     else:
 
-        st.caption("iCodeGuru logo missing")
+        st.caption(
+            "iCodeGuru logo missing"
+        )
 
 
-# =========================================================
-# HEADER
-# =========================================================
+# ============================================================
+# MAIN HEADER
+# ============================================================
 
 st.markdown(
     '<div class="main-title">♻️ WasteWise AI</div>',
@@ -267,66 +439,95 @@ st.markdown(
 
 st.info(
     "Upload a waste image or use your camera. "
-    "WasteWise AI will classify it into one of four trained waste categories."
+    "WasteWise AI will classify it into one of four "
+    "trained waste categories."
 )
 
 
-# =========================================================
+# ============================================================
 # SIDEBAR
-# =========================================================
+# ============================================================
 
 with st.sidebar:
 
-    st.header("♻️ About WasteWise AI")
+    st.header("♻️ WasteWise AI")
+
+    st.markdown("### About the Project")
 
     st.write(
         """
-        WasteWise AI is an image-classification system designed
-        to identify common waste categories using a trained
-        deep-learning model.
+        WasteWise AI uses a trained EfficientNetB0
+        image-classification model to identify waste
+        categories from images.
         """
     )
 
-    st.divider()
+    st.markdown("### Supported Classes")
 
-    st.subheader("Supported Classes")
+    for class_name in CLASS_NAMES:
 
-    st.write("☢️ Hazardous")
-    st.write("🗑️ Non-Recyclable")
-    st.write("🌱 Organic")
-    st.write("♻️ Recyclable")
+        info = WASTE_INFO.get(
+            class_name,
+            {}
+        )
 
-    st.divider()
+        icon = info.get(
+            "icon",
+            "♻️"
+        )
 
-    st.subheader("Model Details")
+        st.write(
+            f"{icon} {class_name}"
+        )
 
-    st.write("Model: EfficientNetB0")
-    st.write("Image Size: 224 × 224")
-    st.write("Classes: 4")
-    st.write("Best Validation Accuracy: 74.14%")
+    st.markdown("---")
+
+    st.caption(
+        "Model: EfficientNetB0"
+    )
+
+    st.caption(
+        "Image Size: 224 × 224"
+    )
+
+    st.caption(
+        "Classes: 4"
+    )
 
 
-# =========================================================
+# ============================================================
 # MODEL CHECK
-# =========================================================
+# ============================================================
 
 if model is None:
 
     st.error(
-        "Model loading error: wastewise_model.keras was not found."
+        "⚠️ Trained model not found."
     )
 
-    st.info(
-        "Please make sure the model exists at: "
-        "model/wastewise_model.keras"
+    st.markdown(
+        """
+        Please make sure your project has:
+
+        `model/wastewise_model.keras`
+
+        and
+
+        `model/class_names.json`
+        """
     )
 
     st.stop()
 
 
-# =========================================================
-# INPUT TABS
-# =========================================================
+# ============================================================
+# IMAGE INPUT
+# ============================================================
+
+st.markdown(
+    "### 📤 Select Waste Image"
+)
+
 
 upload_tab, camera_tab = st.tabs(
     [
@@ -336,9 +537,13 @@ upload_tab, camera_tab = st.tabs(
 )
 
 
-# =========================================================
+uploaded_file = None
+camera_file = None
+
+
+# ============================================================
 # UPLOAD IMAGE
-# =========================================================
+# ============================================================
 
 with upload_tab:
 
@@ -355,9 +560,9 @@ with upload_tab:
     )
 
 
-# =========================================================
+# ============================================================
 # CAMERA
-# =========================================================
+# ============================================================
 
 with camera_tab:
 
@@ -367,11 +572,9 @@ with camera_tab:
     )
 
 
-# =========================================================
-# SELECT INPUT
-# =========================================================
-
-selected_file = None
+# ============================================================
+# SELECT IMAGE
+# ============================================================
 
 if camera_file is not None:
 
@@ -381,106 +584,143 @@ elif uploaded_file is not None:
 
     selected_file = uploaded_file
 
+else:
 
-# =========================================================
-# PREDICTION
-# =========================================================
+    selected_file = None
+
+
+# ============================================================
+# IMAGE PROCESSING
+# ============================================================
 
 if selected_file is not None:
 
     try:
 
-        # -------------------------------------------------
-        # READ IMAGE
-        # -------------------------------------------------
+        image = Image.open(
+            selected_file
+        ).convert("RGB")
 
-        image = Image.open(selected_file).convert("RGB")
+    except Exception as error:
 
-        st.markdown(
-            '<div class="section-title">📷 Selected Image</div>',
-            unsafe_allow_html=True
+        st.error(
+            f"Could not open image: {error}"
         )
 
-        st.image(
-            image,
-            width="stretch"
-        )
+        st.stop()
 
 
-        # -------------------------------------------------
-        # PREPROCESS IMAGE
-        # -------------------------------------------------
+    # ========================================================
+    # DISPLAY IMAGE
+    # ========================================================
 
-        processed_image = image.resize(
-            IMAGE_SIZE
-        )
+    st.markdown(
+        "### 🖼️ Selected Waste Image"
+    )
 
-        image_array = np.array(
-            processed_image
-        ).astype("float32")
-
-        image_array = np.expand_dims(
-            image_array,
-            axis=0
-        )
+    st.image(
+        image,
+        caption="Waste Image",
+        width="stretch"
+    )
 
 
-        # -------------------------------------------------
-        # MODEL PREDICTION
-        # -------------------------------------------------
+    # ========================================================
+    # ANALYZE BUTTON
+    # ========================================================
 
-        with st.spinner("🔍 Analyzing waste..."):
-
-            predictions = model.predict(
-                image_array,
-                verbose=0
-            )[0]
-
-
-        # -------------------------------------------------
-        # PREDICTED CLASS
-        # -------------------------------------------------
-
-        predicted_index = int(
-            np.argmax(predictions)
-        )
-
-        predicted_class = CLASS_NAMES[
-            predicted_index
-        ]
-
-        confidence = float(
-            predictions[predicted_index]
-        )
+    analyze_button = st.button(
+        "🔍 Analyze Waste",
+        type="primary",
+        width="stretch"
+    )
 
 
-        # =================================================
-        # RESULT
-        # =================================================
+    # ========================================================
+    # PREDICTION
+    # ========================================================
 
-        waste_data = WASTE_INFO.get(
+    if analyze_button:
+
+        with st.spinner(
+            "🤖 WasteWise AI is analyzing the image..."
+        ):
+
+            try:
+
+                # Resize image
+                processed_image = image.resize(
+                    IMAGE_SIZE
+                )
+
+                # Convert image to NumPy
+                image_array = np.array(
+                    processed_image
+                ).astype("float32")
+
+                # Add batch dimension
+                image_array = np.expand_dims(
+                    image_array,
+                    axis=0
+                )
+
+                # Model prediction
+                predictions = model.predict(
+                    image_array,
+                    verbose=0
+                )[0]
+
+                # Find highest prediction
+                predicted_index = int(
+                    np.argmax(predictions)
+                )
+
+                predicted_class = (
+                    CLASS_NAMES[predicted_index]
+                )
+
+                confidence = float(
+                    predictions[predicted_index]
+                )
+
+            except Exception as error:
+
+                st.error(
+                    f"Prediction failed: {error}"
+                )
+
+                st.stop()
+
+
+        # ====================================================
+        # GET WASTE INFORMATION
+        # ====================================================
+
+        info = WASTE_INFO.get(
             predicted_class,
-            {}
+            {
+                "icon": "♻️",
+                "category": predicted_class,
+                "message":
+                    "No additional information available.",
+                "tips": []
+            }
         )
 
-        icon = waste_data.get(
-            "icon",
-            "♻️"
-        )
 
-        description = waste_data.get(
-            "description",
-            ""
-        )
+        icon = info["icon"]
 
-        guidance = waste_data.get(
-            "guidance",
-            ""
-        )
+        category = info["category"]
 
+
+        # ====================================================
+        # AI PREDICTION
+        # ====================================================
 
         st.markdown(
-            '<div class="section-title">🤖 AI Prediction</div>',
+            '<div class="section-title">'
+            '🤖 AI Prediction'
+            '</div>',
             unsafe_allow_html=True
         )
 
@@ -494,7 +734,8 @@ if selected_file is not None:
                 </div>
 
                 <div class="confidence">
-                    Confidence: {confidence * 100:.2f}%
+                    Confidence:
+                    {confidence * 100:.2f}%
                 </div>
 
             </div>
@@ -503,150 +744,172 @@ if selected_file is not None:
         )
 
 
-        # =================================================
-        # CONFIDENCE MESSAGE
-        # =================================================
+        # ====================================================
+        # CONFIDENCE STATUS
+        # ====================================================
 
-        if confidence >= CONFIDENCE_THRESHOLD:
+        if confidence >= 0.80:
 
             st.success(
-                f"High-confidence prediction: {predicted_class}"
+                "🟢 High-confidence prediction"
+            )
+
+        elif confidence >= CONFIDENCE_THRESHOLD:
+
+            st.warning(
+                "🟡 Moderate-confidence prediction"
             )
 
         else:
 
+            st.error(
+                "🔴 Low-confidence prediction"
+            )
+
             st.warning(
-                "The model is not highly confident in this prediction. "
-                "Try a clearer image with better lighting."
+                "The AI is not sufficiently confident. "
+                "Try uploading a clearer image with the "
+                "waste item more visible."
             )
 
 
-        # =================================================
-        # DESCRIPTION
-        # =================================================
+        # ====================================================
+        # WASTE CATEGORY
+        # ====================================================
 
         st.markdown(
-            '<div class="section-title">📖 What does this mean?</div>',
-            unsafe_allow_html=True
+            "### 🏷️ Waste Category"
         )
 
         st.write(
-            description
+            f"**{category}**"
         )
 
 
-        # =================================================
-        # RECYCLING GUIDANCE
-        # =================================================
+        # ====================================================
+        # GUIDANCE
+        # ====================================================
 
         st.markdown(
-            '<div class="section-title">♻️ Recommended Action</div>',
-            unsafe_allow_html=True
+            "### 💡 Waste Management Guidance"
         )
 
         st.info(
-            guidance
+            info["message"]
         )
 
 
-        # =================================================
-        # TOP 3 PREDICTIONS
-        # =================================================
+        # ====================================================
+        # RECOMMENDED PRACTICES
+        # ====================================================
+
+        if info["tips"]:
+
+            st.markdown(
+                "### ✅ Recommended Practices"
+            )
+
+            for tip in info["tips"]:
+
+                st.write(
+                    f"• {tip}"
+                )
+
+
+        # ====================================================
+        # TOP PREDICTIONS
+        # ====================================================
 
         st.markdown(
-            '<div class="section-title">📊 Model Predictions</div>',
-            unsafe_allow_html=True
+            "### 📊 Top Predictions"
         )
 
 
-        top_indices = np.argsort(
+        sorted_indices = np.argsort(
             predictions
-        )[::-1][:3]
+        )[::-1]
 
 
-        for index in top_indices:
+        for rank, index in enumerate(
+            sorted_indices[:3],
+            start=1
+        ):
 
-            class_name = CLASS_NAMES[
-                int(index)
-            ]
+            class_name = CLASS_NAMES[index]
 
-            class_confidence = float(
+            probability = float(
                 predictions[index]
             )
 
             st.write(
-                f"**{class_name}** — "
-                f"{class_confidence * 100:.2f}%"
+                f"**{rank}. {class_name}**"
             )
 
             st.progress(
-                class_confidence
+                min(
+                    probability,
+                    1.0
+                )
+            )
+
+            st.caption(
+                f"{probability * 100:.2f}%"
             )
 
 
-        # =================================================
-        # DISCLAIMER
-        # =================================================
+        # ====================================================
+        # IMPORTANT NOTICE
+        # ====================================================
+
+        st.markdown("---")
 
         st.warning(
-            "⚠️ Educational prototype: WasteWise AI provides "
-            "AI-based classification and should not be treated "
-            "as a definitive safety or disposal authority."
+            """
+            ⚠️ **Important:** WasteWise AI is an educational
+            machine-learning project. Its prediction should
+            not be treated as a definitive determination of
+            material composition, recyclability, hazardousness,
+            or microbiological safety. Always follow local
+            waste-management rules and use appropriate
+            professional guidance for hazardous materials.
+            """
         )
 
 
-    except Exception as error:
-
-        st.error(
-            "An error occurred while processing the image."
-        )
-
-        st.exception(error)
-
-
-# =========================================================
+# ============================================================
 # EMPTY STATE
-# =========================================================
+# ============================================================
 
 else:
 
     st.markdown(
+        "### 📸 How to Use"
+    )
+
+    st.write(
         """
-        <div class="result-box">
-
-            <div class="result-title">
-                ♻️ Ready to Classify Waste
-            </div>
-
-            <p style="text-align:center;">
-                Upload a waste image or take a picture using
-                your camera to start the AI analysis.
-            </p>
-
-        </div>
-        """,
-        unsafe_allow_html=True
+        1. Upload a clear waste image, or use your camera.
+        2. Click **Analyze Waste**.
+        3. WasteWise AI predicts the waste category.
+        4. Review the confidence score.
+        5. Follow the displayed waste-management guidance.
+        """
     )
 
 
-# =========================================================
+# ============================================================
 # FOOTER
-# =========================================================
+# ============================================================
 
 st.markdown(
     """
     <div class="footer">
-
-        <b>WasteWise AI</b><br>
-        AI-Powered Waste Classification & Recycling Assistant<br><br>
-        Built with TensorFlow + Streamlit
-
+        ♻️ <b>WasteWise AI</b><br>
+        AI for Smarter Waste Classification & Awareness
     </div>
     """,
     unsafe_allow_html=True
 )
-
-
 # # ============================================================
 # # WASTEWISE AI
 # # AI-Powered Waste Classification & Recycling Assistant
