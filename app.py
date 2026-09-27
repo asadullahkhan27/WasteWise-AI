@@ -59,7 +59,7 @@ SCHOOL_LOGO = (
 # MODEL SETTINGS
 # ============================================================
 
-IMAGE_SIZE = (224, 224)
+IMAGE_SIZE = (324, 324)
 
 CONFIDENCE_THRESHOLD = 0.60
 
