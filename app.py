@@ -380,7 +380,7 @@ with left_col:
 
         st.image(
             str(SCHOOL_LOGO),
-            width: 152
+            width=152
         )
 
     else:
@@ -409,7 +409,7 @@ with right_col:
 
         st.image(
             str(ICODEGURU_LOGO),
-            width: 152
+            width=152
         )
 
     else:
