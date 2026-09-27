@@ -381,6 +381,7 @@ with left_col:
         st.image(
             str(SCHOOL_LOGO),
             width=152
+            height=100
         )
 
     else:
